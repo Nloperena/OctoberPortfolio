@@ -1,90 +1,17 @@
+/* src/index.css */
+
+/* Import the Typekit fonts at the very top */
+@import url('https://use.typekit.net/ofz2nnp.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Set the Nobel font as the base font for html and body */
+@layer base {
+  html, body {
+    font-family: 'Nobel', sans-serif; /* Ensure that Nobel is the primary font */
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-/* Neon Header Styles */
-.neon-header {
-  background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
-  box-shadow: 0px 0px 20px rgba(128, 0, 128, 0.8);
-}
-
-.neon-text {
-  color: #ff0099;
-  text-shadow: 0 0 10px #ff0099, 0 0 20px #ff0099, 0 0 40px #ff0099, 0 0 80px #ff0099;
-}
-
-.neon-subtext {
-  color: #ffffff;
-  text-shadow: 0 0 5px #00e5ff, 0 0 10px #00e5ff, 0 0 15px #00e5ff, 0 0 20px #00e5ff;
-}
-
-/* Footer Neon Icons */
-.neon-footer {
-  background: #101010;
-  box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.5);
-}
-
-.neon-icon {
-  color: #fff;
-  transition: all 0.3s ease-in-out;
-}
-
-.neon-icon:hover {
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-}
-.neon-text {
-  color: #00e5ff;
-  text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff, 0 0 40px #00e5ff;
-}
-
-canvas {
-  display: block;
-}
-.custom-background {
-  background: radial-gradient(circle at center, #0d0d0d, #101010, #111111);
-  filter: blur(20px);
-  transition: background 0.2s ease;
-}
-
-.animated-bg {
-  position: relative;
-  overflow: hidden;
-  transition: background 0.5s ease-in-out;
-}
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
-}
-
-.bento-grid > div {
-  background-color: #1f2937;
-  color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.bento-grid .web-development {
-  grid-column: span 4;
-}
-
-.bento-grid .design-tools, 
-.bento-grid .marketing-tools, 
-.bento-grid .networking, 
-.bento-grid .project-tools {
-  grid-column: span 2;
-}
+/* Custom Neon Text Effect */

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from 'contentful';
 import { motion } from 'framer-motion';
 
+// Create Contentful client using environment variables
 const client = createClient({
   space: process.env.REACT_APP_CONTENTFUL_SPACE_ID,
   accessToken: process.env.REACT_APP_CONTENTFUL_ACCESS_TOKEN,
@@ -20,12 +21,12 @@ const cardVariants = (hoverEnabled, delay) => ({
   },
   hover: hoverEnabled
     ? {
-        scale: 1.1, // Slightly larger on hover
-        boxShadow: '0px 0px 60px rgba(0, 255, 255, 0.9)', // More pronounced neon glow
+        scale: 1.1,
+        boxShadow: '0px 0px 60px rgba(0, 255, 255, 0.9)', 
         transition: {
-          duration: 0.4, // Slightly longer hover effect
+          duration: 0.4,
           ease: 'easeInOut',
-          delay, // Offset delay for each card
+          delay,
         },
       }
     : {},
@@ -41,7 +42,6 @@ const ProjectCard = ({ title, description, image, url, delay }) => {
   const [hoverEnabled, setHoverEnabled] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Toggles between truncated and full text
   const toggleExpanded = () => setIsExpanded(!isExpanded);
 
   useEffect(() => {
@@ -61,15 +61,15 @@ const ProjectCard = ({ title, description, image, url, delay }) => {
       initial="idle"
       whileHover={hoverEnabled ? 'hover' : ''}
       animate="idle"
-      whileTap="hover" // Added for mobile 'tap' interaction
-      style={{ flex: '1 1 calc(100% - 1rem)', maxWidth: '100%' }} // Mobile friendly
+      whileTap="hover"
+      style={{ flex: '1 1 calc(100% - 1rem)', maxWidth: '100%' }} 
     >
       {/* Image with hover effect */}
       {image ? (
         <motion.img
           src={image}
           alt={title}
-          className="w-full h-48 object-cover rounded-lg transition-transform duration-300 hover:scale-110" // Increased hover zoom
+          className="w-full h-48 object-cover rounded-lg transition-transform duration-300 hover:scale-110" 
         />
       ) : (
         <div className="w-full h-48 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400">
@@ -105,6 +105,7 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        // Fetch entries from Contentful using the 'portfolioProjects' content type
         const response = await client.getEntries({ content_type: 'portfolioProjects' });
         setProjects(response.items);
         setLoading(false);
@@ -135,14 +136,14 @@ const Projects = () => {
           </p>
         </div>
 
-        {/* Project Cards with delayed hover */}
+        {/* Project Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => {
             const { header, description, projectHeader, link } = project.fields;
             const imageUrl = projectHeader?.fields?.file?.url
               ? `https:${projectHeader.fields.file.url}`
               : null;
-            const projectLink = link?.content?.[0]?.content?.[0]?.value || '#'; // Fetching link from rich text
+            const projectLink = link?.content?.[0]?.content?.[0]?.value || '#'; 
 
             return (
               <ProjectCard
@@ -151,7 +152,7 @@ const Projects = () => {
                 description={description}
                 image={imageUrl}
                 url={projectLink}
-                delay={index * 0.1} // Adding delay for each card
+                delay={index * 0.1} 
               />
             );
           })}

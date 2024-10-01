@@ -1,16 +1,15 @@
-import React, { useRef, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Ensure BrowserRouter is correctly imported
 import Hero from './components/Hero';
 import Projects from './components/Projects';
 import SkillsTechnologies from './components/SkillsTechnologies';
 import ContactForm from './components/ContactForm';
 import { motion } from 'framer-motion';
-import WaterSection from './components/WaterSection'; // Water Section component
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
-
-import './index.css'; // Tailwind styles
+import './index.css'; 
+import LocalWebServicesSection from './components/LocalWebServicesSection';
 
 function App() {
   return (
@@ -24,7 +23,7 @@ function App() {
       >
         {/* Header */}
         <header className="text-center p-10 bg-black bg-opacity-80 neon-header">
-          <h1 className="text-5xl font-bold neon-text breathing-text">Nico's Neon Portfolio</h1>
+          <h1 className="text-5xl font-bold neon-text breathing-text">Nico's Portfolio</h1>
           <p className="mt-3 text-xl neon-subtext breathing-text-small">Frontend Engineer | Designer</p>
         </header>
 
@@ -35,10 +34,10 @@ function App() {
             element={
               <>
                 <Hero />
+                <LocalWebServicesSection />
                 <Projects />
                 <SkillsTechnologies />
                 <ContactForm />
-                <WaterSection /> {/* Add water simulation section */}
               </>
             }
           />
