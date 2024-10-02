@@ -34,8 +34,9 @@ function App() {
             element={
               <>
                 <Hero />
-                <LocalWebServicesSection />
+              
                 <Projects />
+                <LocalWebServicesSection />
                 <SkillsTechnologies />
                 <ContactForm />
               </>
