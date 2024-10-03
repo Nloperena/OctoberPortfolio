@@ -10,7 +10,7 @@ import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import './index.css'; 
 import LocalWebServicesSection from './components/LocalWebServicesSection';
-import BackgroundVideo from './components/BackgroundVideo'; // Import the new component
+import BackgroundVideo from './components/BackgroundVideo';
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
         transition={{ duration: 0.5 }}
       >
         {/* Sticky Background Video */}
-        <BackgroundVideo /> 
+        <BackgroundVideo />
 
         {/* Header */}
         <header className="text-center p-10 bg-black bg-opacity-80 neon-header">
