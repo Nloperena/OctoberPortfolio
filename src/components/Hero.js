@@ -38,10 +38,10 @@ const Hero = () => {
   // Parallax setup
   const { scrollYProgress } = useViewportScroll();
 
-  // Sticky and fade-out transformations
-  const translateY = useTransform(scrollYProgress, [0, 0.4], [0, -100]); // Parallax effect
-  const opacity = useTransform(scrollYProgress, [0.15, 0.17], [1, 0]); // Fade out sooner
-  const shootUp = useTransform(scrollYProgress, [0.15, 0.17], [0, -200]); // Shoot up during fade out
+  // Sticky and fade-out transformations (starting much sooner)
+  const translateY = useTransform(scrollYProgress, [0, 0.2], [0, -100]); // Parallax effect
+  const opacity = useTransform(scrollYProgress, [0.05, 0.1], [1, 0]); // Fade out sooner (after two swipes)
+  const shootUp = useTransform(scrollYProgress, [0.05, 0.1], [0, -200]); // Shoot up during fade out
 
   // Fetch images and project URLs for the hero section from Contentful
   useEffect(() => {
@@ -101,9 +101,9 @@ const Hero = () => {
           Stand Out with a Unique Website Design
         </motion.h1>
 
-        {/* Subheading with softer color */}
+        {/* Subheading with opaque circular background, now properly responsive */}
         <motion.p
-          className="text-lg md:text-2xl text-gray-400"
+          className="text-lg md:text-2xl text-gray-400 relative bg-white bg-opacity-20 p-4 rounded-full shadow-lg w-64 sm:w-80 md:w-96"
           initial={{ scale: 0.8, opacity: 0 }} // Start smaller and hidden
           animate={{ scale: 1, opacity: 1 }} // Grow to full size
           transition={{ delay: 0.5, duration: 1.2, ease: 'easeOut' }} // Slight delay after headline
@@ -118,7 +118,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }} // Tap effect
             className="px-6 py-3 bg-gradient-to-r from-blue-500 via-purple-600 to-purple-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-2xl transition-transform duration-300"
           >
-            Get Started
+            Hire Me
           </motion.button>
 
           <motion.button
@@ -126,7 +126,7 @@ const Hero = () => {
             whileTap={{ scale: 0.95 }} // Tap effect
             className="px-6 py-3 bg-transparent border-2 border-blue-500 text-blue-500 text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-500 hover:text-white hover:shadow-2xl transition-transform duration-300"
           >
-            Contact Us
+            Let's Talk
           </motion.button>
         </div>
       </div>

@@ -27,11 +27,11 @@ const BackgroundVideo = () => {
   }, [hasScrolled]);
 
   return (
-    <div className="background-video-container relative">
+    <div className="background-video-container sticky top-0 w-full h-screen z-0">
       {isVertical ? (
-        // Vertical display video with 16:9 ratio
+        // Vertical display video (fullscreen on mobile)
         <div
-          className={`w-full h-0 pb-[56.25%] relative ${hasScrolled ? 'fade-in' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full ${hasScrolled ? 'fade-in' : 'opacity-0'}`}
           style={{ transition: 'opacity 5s ease' }} // Add fade-in transition
         >
           <iframe
@@ -39,13 +39,13 @@ const BackgroundVideo = () => {
             frameBorder="0"
             allow="autoplay; fullscreen; picture-in-picture"
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            title="AbstractVides-2-2"
+            title="VerticalVideo"
           ></iframe>
         </div>
       ) : (
-        // Horizontal display video with 16:9 ratio
+        // Horizontal display video (fullscreen)
         <div
-          className={`w-full h-0 pb-[56.25%] relative ${hasScrolled ? 'fade-in' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full ${hasScrolled ? 'fade-in' : 'opacity-0'}`}
           style={{ transition: 'opacity 5s ease' }} // Add fade-in transition
         >
           <iframe
@@ -53,7 +53,7 @@ const BackgroundVideo = () => {
             frameBorder="0"
             allow="autoplay; fullscreen; picture-in-picture"
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            title="AbstractVides"
+            title="HorizontalVideo"
           ></iframe>
         </div>
       )}
