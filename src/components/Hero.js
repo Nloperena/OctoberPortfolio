@@ -1,287 +1,176 @@
-// src/components/Hero.js
-
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { faFile } from '@fortawesome/free-solid-svg-icons';
-import heroImg from '../assets/heroImg.jpg'; // Ensure this path is correct
+import { motion, useViewportScroll, useTransform } from 'framer-motion';
+import { createClient } from 'contentful';
+
+// Create Contentful client
+const client = createClient({
+  space: process.env.REACT_APP_CONTENTFUL_SPACE_ID,
+  accessToken: process.env.REACT_APP_CONTENTFUL_ACCESS_TOKEN,
+  environment: 'master',
+});
+
+// Animation variants for fade and slide effects (appear and disappear)
+const imageVariants = {
+  hidden: { opacity: 0, y: 20 }, // Start hidden and down
+  visible: {
+    opacity: 1,
+    y: 0, // Slide up and become visible
+    transition: {
+      duration: 0.8,
+      ease: 'easeOut',
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20, // Slide up and fade out when leaving
+    transition: {
+      duration: 0.5, // Quick fade-out
+      ease: 'easeIn',
+    },
+  },
+};
 
 const Hero = () => {
-  const [showSubheading, setShowSubheading] = useState(false);
-  const [showGetInTouch, setShowGetInTouch] = useState(false);
-  const [showIcons, setShowIcons] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // For hover effect
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Parallax setup
+  const { scrollYProgress } = useViewportScroll();
+
+  // Sticky and fade-out transformations
+  const translateY = useTransform(scrollYProgress, [0, 0.4], [0, -100]); // Parallax effect
+  const opacity = useTransform(scrollYProgress, [0.15, 0.17], [1, 0]); // Fade out sooner
+  const shootUp = useTransform(scrollYProgress, [0.15, 0.17], [0, -200]); // Shoot up during fade out
+
+  // Fetch images and project URLs for the hero section from Contentful
   useEffect(() => {
-    // Trigger the animations after the headline finishes
-    const timers = [
-      setTimeout(() => setShowSubheading(true), 2000),
-      setTimeout(() => setShowGetInTouch(true), 3000),
-      setTimeout(() => setShowIcons(true), 4000),
-    ];
-    return () => timers.forEach(timer => clearTimeout(timer));
+    const fetchHeroImages = async () => {
+      try {
+        const response = await client.getEntries({ content_type: 'portfolioProjects' });
+
+        // Extract images and URLs from Contentful response
+        const fetchedImages = response.items.map((item) => {
+          const imageUrl = item.fields.projectHeader?.fields?.file?.url
+            ? `https:${item.fields.projectHeader.fields.file.url}`
+            : null;
+          const projectUrl = item.fields.link?.content?.[0]?.content?.[0]?.value || '#'; // Fallback if no URL is provided
+          return { imageUrl, projectUrl };
+        });
+
+        setImages(fetchedImages);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+
+    fetchHeroImages();
   }, []);
 
-  const handleHireMeClick = () => {
-    setShowForm(true); // Show the contact form when "Connect with me" is clicked
-  };
+  if (loading) {
+    return <div>Loading images...</div>;
+  }
 
-  const handleCloseForm = () => {
-    setShowForm(false); // Hide the contact form
-  };
+  if (error) {
+    return <div>Error loading images: {error.message}</div>;
+  }
 
   return (
-    <header className="relative flex items-center justify-center min-h-screen bg-black text-white pt-16 z-0">
-      {/* Background Image */}
-      <motion.div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url(${heroImg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-        initial={{ filter: 'blur(0.1px)', opacity: 0.6 }}
-        animate={{ filter: 'blur(0.1px)', opacity: 1 }}
-        transition={{ duration: 1.5 }}
-      />
+    <motion.header
+      className="sticky top-0 flex items-center justify-center min-h-screen bg-transparent text-white pt-16 z-10"
+      style={{ translateY, opacity, y: shootUp }} // Apply parallax effect, fade out, and shoot up
+    >
+      {/* Glassmorphism Background */}
+      <div className="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-30 rounded-lg shadow-[10px_10px_30px_rgba(0,0,0,0.7)] z-0"></div>
 
-      {/* Glassmorphism Content Container */}
-      <motion.div
-        className="relative flex flex-col items-start justify-center w-full max-w-5xl p-6 md:p-10 z-10 rounded-xl"
-        layout
-        style={{
-          background: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white background
-          boxShadow: isHovered
-            ? '0 12px 60px rgba(0, 0, 0, 0.7)' // Harsher shadow on hover
-            : '0 8px 50px rgba(0, 0, 0, 0.5)', // Subtle shadow initially
-          backdropFilter: isHovered ? 'none' : 'blur(10px)', // Remove blur on hover
-          border: '1px solid rgba(255, 255, 255, 0.18)', // Light border for emphasis
-          transition: 'backdrop-filter 0.4s ease, box-shadow 0.4s ease', // Smooth transition for hover effects
-        }}
-        onMouseEnter={() => setIsHovered(true)} // Activate hover effect
-        onMouseLeave={() => setIsHovered(false)} // Deactivate hover effect
-      >
-        {/* Headline - Focused on Customer Results */}
+      {/* Main Content Container */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4">
+        {/* Headline with grow effect */}
         <motion.h1
-          className="text-4xl md:text-6xl font-bold text-white mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          layout
+          className="text-3xl md:text-5xl font-bold mb-4"
+          initial={{ scale: 0.8, opacity: 0 }} // Start smaller and hidden
+          animate={{ scale: 1, opacity: 1 }} // Grow to full size
+          transition={{ duration: 1.2, ease: 'easeOut' }} // Smooth animation
           style={{
-            color: "#fff", // Bright white color
-            textShadow: "4px 4px 12px rgba(0, 0, 0, 0.8)", // Stronger shadow for better contrast
+            color: '#fff',
+            textShadow: '4px 4px 12px rgba(0, 0, 0, 0.7)',
           }}
         >
-          Get a High-Converting Website That Drives Results
+          Stand Out with a Unique Website Design
         </motion.h1>
 
-        {/* Subheading */}
-        <AnimatePresence>
-          {showSubheading && (
-            <motion.p
-              className="text-xl md:text-4xl text-white font-semibold mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8, ease: [0.42, 0, 0.58, 1] }}
-              layout
-              style={{
-                color: "rgba(255, 255, 255, 0.9)", // High contrast white color
-                textShadow: "3px 3px 12px rgba(0, 0, 0, 0.8)", // Shadow for better contrast
-              }}
-            >
-              I specialize in building websites that convert visitors into customers.
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* Subheading with softer color */}
+        <motion.p
+          className="text-lg md:text-2xl text-gray-400"
+          initial={{ scale: 0.8, opacity: 0 }} // Start smaller and hidden
+          animate={{ scale: 1, opacity: 1 }} // Grow to full size
+          transition={{ delay: 0.5, duration: 1.2, ease: 'easeOut' }} // Slight delay after headline
+        >
+          I create modern websites that turn visitors into customers.
+        </motion.p>
 
-        {/* Let's Get In Touch Text */}
-        <AnimatePresence>
-          {showGetInTouch && (
-            <motion.p
-              className="text-lg md:text-3xl text-gray-300 mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8, ease: [0.42, 0, 0.58, 1] }}
-              layout
-              style={{
-                textAlign: 'left',
-              }}
-            >
-              Let's get in touch to complete your next project.
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* Buttons */}
+        <div className="mt-8 flex space-x-4">
+          <motion.button
+            whileHover={{ scale: 1.05, y: -5 }} // Hover effect with slight lift
+            whileTap={{ scale: 0.95 }} // Tap effect
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 via-purple-600 to-purple-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-2xl transition-transform duration-300"
+          >
+            Get Started
+          </motion.button>
 
-        {/* Social Links */}
-        <AnimatePresence>
-          {showIcons && (
+          <motion.button
+            whileHover={{ scale: 1.05, y: -5 }} // Hover effect with slight lift
+            whileTap={{ scale: 0.95 }} // Tap effect
+            className="px-6 py-3 bg-transparent border-2 border-blue-500 text-blue-500 text-lg font-semibold rounded-lg shadow-lg hover:bg-blue-500 hover:text-white hover:shadow-2xl transition-transform duration-300"
+          >
+            Contact Us
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Dynamically rendered images with precise positions */}
+      {images.slice(0, 4).map((imageData, index) => {
+        const { imageUrl, projectUrl } = imageData;
+
+        // Assign different positions based on the index (maintaining original)
+        const positionClasses =
+          index === 0
+            ? 'top-16 left-4 sm:top-20 sm:left-10 md:top-24 lg:left-20'
+            : index === 1
+            ? 'top-32 right-4 sm:top-40 sm:right-10 md:top-48 lg:right-20'
+            : index === 2
+            ? 'bottom-16 left-4 sm:bottom-20 sm:left-10 md:bottom-24 lg:left-20'
+            : 'bottom-32 right-4 sm:bottom-40 sm:right-10 md:bottom-48 lg:right-20';
+
+        return (
+          <motion.a
+            key={index}
+            href={projectUrl} // Add the project URL as the link
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`absolute w-40 h-24 sm:w-60 sm:h-36 md:w-72 md:h-48 lg:w-96 lg:h-60 bg-white rounded-lg shadow-[10px_10px_30px_rgba(0,0,0,0.7)] mx-8 hover:shadow-[15px_15px_40px_rgba(0,0,0,0.9)] transition-all duration-300 ease-in-out ${positionClasses}`}
+          >
             <motion.div
-              className="flex space-x-4 md:space-x-6 mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: [0.42, 0, 0.58, 1] }}
-              layout
-            >
-              <a
-                href="https://www.linkedin.com/in/nicholas-loperena-022813185/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="LinkedIn Profile"
-              >
-                <motion.div
-                  className="p-3 md:p-4 bg-blue-700 text-white rounded-full group-hover:bg-blue-600 transition-transform transform"
-                  whileHover={{ scale: 1.2 }} // Enlarge on hover
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  layout
-                >
-                  <FontAwesomeIcon
-                    icon={faLinkedin}
-                    className="text-2xl md:text-3xl group-hover:text-gray-100 transition-colors"
-                  />
-                </motion.div>
-              </a>
-
-              <a
-                href="https://github.com/Nloperena"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="GitHub Profile"
-              >
-                <motion.div
-                  className="p-3 md:p-4 bg-gray-800 text-white rounded-full group-hover:bg-gray-700 transition-transform transform"
-                  whileHover={{ scale: 1.2 }} // Enlarge on hover
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  layout
-                >
-                  <FontAwesomeIcon
-                    icon={faGithub}
-                    className="text-2xl md:text-3xl group-hover:text-gray-100 transition-colors"
-                  />
-                </motion.div>
-              </a>
-
-              <a
-                href="./assets/Resume-Nicholas Loperena.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="Download Resume"
-              >
-                <motion.div
-                  className="p-3 md:p-4 bg-red-600 text-white rounded-full group-hover:bg-red-500 transition-transform transform"
-                  whileHover={{ scale: 1.2 }} // Enlarge on hover
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  layout
-                >
-                  <FontAwesomeIcon
-                    icon={faFile}
-                    className="text-2xl md:text-3xl group-hover:text-gray-100 transition-colors"
-                  />
-                </motion.div>
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Connect with me Button */}
-        <AnimatePresence>
-          {showIcons && (
-            <motion.button
-              className="bg-blue-600 hover:bg-blue-500 text-white py-4 px-8 rounded-lg transition duration-300 mb-8 text-lg md:text-xl"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1, ease: [0.42, 0, 0.58, 1] }}
-              layout
-              whileHover={{ scale: 1.1 }} // Slightly enlarge on hover
-              onClick={handleHireMeClick}
-            >
-              Connect with me
-            </motion.button>
-          )}
-        </AnimatePresence>
-
-        {/* Contact Form Overlay */}
-        <AnimatePresence>
-          {showForm && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 rounded-xl"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <motion.div
-                className="w-full max-w-lg p-6 bg-gray-800 bg-opacity-90 rounded-lg backdrop-blur-md shadow-2xl relative"
-                initial={{ x: '-100%' }} // Slide in from the left
-                animate={{ x: '0%' }}
-                exit={{ x: '-100%' }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              >
-                <h2 className="text-3xl font-bold mb-4 text-white">Let's Talk</h2>
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-1 text-white">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 rounded-lg bg-gray-700 bg-opacity-70 border border-gray-600 focus:outline-none focus:border-blue-500 text-white"
-                      placeholder="Your Name"
-                      required
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-1 text-white">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-3 py-2 rounded-lg bg-gray-700 bg-opacity-70 border border-gray-600 focus:outline-none focus:border-blue-500 text-white"
-                      placeholder="email@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-1 text-white">
-                      Message
-                    </label>
-                    <textarea
-                      className="w-full px-3 py-2 rounded-lg bg-gray-700 bg-opacity-70 border border-gray-600 focus:outline-none focus:border-blue-500 text-white"
-                      placeholder="Your message..."
-                      rows="5"
-                      required
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 px-6 rounded-lg transition duration-300"
-                  >
-                    Send Message
-                  </button>
-                </form>
-                {/* Close Button */}
-                <button
-                  className="absolute top-4 right-4 text-red-500 hover:text-red-400 text-2xl"
-                  onClick={handleCloseForm}
-                  aria-label="Close Contact Form"
-                >
-                  &times;
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </header>
+              style={{
+                backgroundImage: `url(${imageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+              variants={imageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              whileHover="hover"
+              whileTap="hover"
+              className="w-full h-full rounded-lg"
+            />
+          </motion.a>
+        );
+      })}
+    </motion.header>
   );
 };
 

@@ -12,7 +12,7 @@ import {
   faProjectDiagram, faSitemap, faSearch, faMousePointer, faLock, faUserShield 
 } from '@fortawesome/free-solid-svg-icons';
 
-import bentoimg from '../assets/PFP2.jpeg';
+import bentoimg from '../assets/headshot.jpg';
 
 // Skill categories with appropriate icons
 const skillCategories = [

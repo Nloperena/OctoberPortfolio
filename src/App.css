@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+/* Default opacity is 0 before the user scrolls */
+.opacity-0 {
+  opacity: 0;
+}
+
+/* Fade in effect: opacity goes from 0 to 1 in 5 seconds */
+.fade-in {
+  opacity: 1;
+  transition: opacity 5s ease; /* Fade in over 5 seconds */
+}

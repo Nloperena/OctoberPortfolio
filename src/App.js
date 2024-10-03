@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Ensure BrowserRouter is correctly imported
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
 import SkillsTechnologies from './components/SkillsTechnologies';
@@ -10,6 +10,7 @@ import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import './index.css'; 
 import LocalWebServicesSection from './components/LocalWebServicesSection';
+import BackgroundVideo from './components/BackgroundVideo'; // Import the new component
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Sticky Background Video */}
+        <BackgroundVideo /> 
+
         {/* Header */}
         <header className="text-center p-10 bg-black bg-opacity-80 neon-header">
           <h1 className="text-5xl font-bold neon-text breathing-text">Nico's Portfolio</h1>
@@ -34,7 +38,6 @@ function App() {
             element={
               <>
                 <Hero />
-              
                 <Projects />
                 <LocalWebServicesSection />
                 <SkillsTechnologies />
