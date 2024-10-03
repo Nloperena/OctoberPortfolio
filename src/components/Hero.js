@@ -102,8 +102,8 @@ const Hero = () => {
         <motion.h1
           className="text-3xl md:text-5xl font-bold mb-4"
           style={{
-            color: '#0A84FF', // Navy blue for contrast
-            WebkitTextStroke: '.01px white', // White stroke for modern browsers
+            color: 'black', // Navy blue for contrast
+          
             textShadow: '2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white', // Fallback for older browsers
           }}
           initial={{ opacity: 0, y: 100 }}
@@ -122,7 +122,7 @@ const Hero = () => {
         <motion.p
           className="text-lg md:text-2xl relative bg-white bg-opacity-20 p-4 rounded-full shadow-lg w-64 sm:w-80 md:w-96"
           style={{
-            color: '#0A84FF', // Navy blue for contrast
+            color: 'black', // Navy blue for contrast
             WebkitTextStroke: '0.1px black', // Light stroke around paragraph
             textShadow: '1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white', // Stroke effect using text-shadow
           }}

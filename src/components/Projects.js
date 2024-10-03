@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from 'contentful';
-import { motion } from 'framer-motion';
+import { motion, useAnimation, useScroll, useTransform } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 // Create Contentful client using environment variables
 const client = createClient({
@@ -9,28 +10,46 @@ const client = createClient({
   environment: 'master',
 });
 
-// Idle animation for floating effect with staggered hover
-const cardVariants = (hoverEnabled, delay) => ({
-  idle: {
-    y: [0, -10, 0],
+// Variants for scroll-based animations with slide up effects (no bounce on exit)
+const containerVariants = {
+  hidden: { opacity: 0, y: 200 }, // Start below viewport, hidden
+  visible: {
+    opacity: 1,
+    y: 0, // Slide up into place
     transition: {
-      duration: 5,
-      ease: 'easeInOut',
-      repeat: Infinity,
+      type: 'spring',
+      stiffness: 200,
+      damping: 25,
+      when: 'beforeChildren',
+      staggerChildren: 0.2, // Delay between child animations
     },
   },
-  hover: hoverEnabled
-    ? {
-        scale: 1.1,
-        boxShadow: '0px 0px 60px rgba(0, 255, 255, 0.9)', 
-        transition: {
-          duration: 0.4,
-          ease: 'easeInOut',
-          delay,
-        },
-      }
-    : {},
-});
+  exit: {
+    opacity: 0,
+    y: -100, // Slide up smoothly when exiting, no bounce
+    transition: { ease: 'easeInOut', duration: 0.6 }, // Smooth exit
+  },
+};
+
+// Individual card animation variants
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.9, y: 50 }, // Start slightly lower
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0, // Slide up and scale to normal size
+    transition: {
+      type: 'spring',
+      stiffness: 150,
+      damping: 20,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -100, // Slide up and fade on exit
+    transition: { ease: 'easeInOut', duration: 0.4 },
+  },
+};
 
 // Helper function to truncate text
 const truncateText = (text, limit) => {
@@ -39,17 +58,9 @@ const truncateText = (text, limit) => {
 };
 
 const ProjectCard = ({ title, description, image, url, delay }) => {
-  const [hoverEnabled, setHoverEnabled] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const toggleExpanded = () => setIsExpanded(!isExpanded);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setHoverEnabled(true);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
+  const { scrollYProgress } = useScroll();
+  // Apply parallax effect to cards (move slower than the page scroll)
+  const y = useTransform(scrollYProgress, [0, 1], [0, -100]); // Move cards slower than scroll
 
   return (
     <motion.a
@@ -57,19 +68,18 @@ const ProjectCard = ({ title, description, image, url, delay }) => {
       target="_blank"
       rel="noopener noreferrer"
       className="bg-gradient-to-br from-gray-900 to-gray-800 neon-card p-6 rounded-lg shadow-xl border border-gray-700 transition-all duration-300 hover:bg-gradient-to-br hover:from-gray-800 hover:to-gray-700"
-      variants={cardVariants(hoverEnabled, delay)}
-      initial="idle"
-      whileHover={hoverEnabled ? 'hover' : ''}
-      animate="idle"
-      whileTap="hover"
-      style={{ flex: '1 1 calc(100% - 1rem)', maxWidth: '100%' }} 
+      variants={cardVariants} // Apply animation to each card
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      style={{ y }} // Parallax effect for cards
     >
-      {/* Image with hover effect */}
+      {/* Image */}
       {image ? (
         <motion.img
           src={image}
           alt={title}
-          className="w-full h-48 object-cover rounded-lg transition-transform duration-300 hover:scale-110" 
+          className="w-full h-48 object-cover rounded-lg transition-transform duration-300 hover:scale-110"
         />
       ) : (
         <div className="w-full h-48 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400">
@@ -80,18 +90,7 @@ const ProjectCard = ({ title, description, image, url, delay }) => {
         {title}
       </h3>
       <p className="text-gray-400 mt-4 text-lg leading-relaxed">
-        {isExpanded ? description : truncateText(description, 100)}{' '}
-        {description.length > 100 && (
-          <span
-            className="text-cyan-400 cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleExpanded();
-            }}
-          >
-            {isExpanded ? 'Show Less' : 'Read More'}
-          </span>
-        )}
+        {truncateText(description, 100)}
       </p>
     </motion.a>
   );
@@ -102,10 +101,16 @@ const Projects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // InView hook to trigger animations when section comes into view
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: false, // Trigger animation every time it scrolls into view
+    threshold: 0.1, // Trigger animation when 10% of section is visible
+  });
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Fetch entries from Contentful using the 'portfolioProjects' content type
         const response = await client.getEntries({ content_type: 'portfolioProjects' });
         setProjects(response.items);
         setLoading(false);
@@ -114,9 +119,16 @@ const Projects = () => {
         setLoading(false);
       }
     };
-
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible');
+    } else {
+      controls.start('hidden');
+    }
+  }, [controls, inView]);
 
   if (loading) {
     return <div>Loading projects...</div>;
@@ -127,23 +139,41 @@ const Projects = () => {
   }
 
   return (
-    <div className="animated-bg py-10 lg:py-20 px-4 lg:px-24">
+    <motion.div
+      ref={ref}
+      className="py-10 lg:py-20 px-4 lg:px-24 mb-40" // Added more margin-bottom for more space
+      variants={containerVariants} // Container animation
+      initial="hidden"
+      animate={controls}
+      exit="exit"
+    >
       <div className="container mx-auto max-w-7xl">
-        <div className="mb-10">
-          <h2 className="text-5xl lg:text-7xl font-bold text-left neon-text">Projects</h2>
-          <p className="text-md lg:text-lg text-left text-gray-400 mt-2">
-            Here are some of my latest works and projects.
-          </p>
-        </div>
+        {/* Headline with Wrapper */}
+        <motion.div
+          className="inline-block bg-white bg-opacity-20 backdrop-blur-lg px-6 py-4 rounded-lg shadow-lg mb-10" // Glassmorphism style for headline, width matches text
+          variants={cardVariants} // Apply animation to the headline wrapper
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          <h2 className="text-5xl lg:text-7xl font-bold neon-text text-white">
+            Projects
+          </h2>
+          <p className="text-md lg:text-lg text-left text-white-300 ">
+          Here are some of my latest works and projects.
+        </p>
+        </motion.div>
+        
+        
 
         {/* Project Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => {
             const { header, description, projectHeader, link } = project.fields;
             const imageUrl = projectHeader?.fields?.file?.url
               ? `https:${projectHeader.fields.file.url}`
               : null;
-            const projectLink = link?.content?.[0]?.content?.[0]?.value || '#'; 
+            const projectLink = link?.content?.[0]?.content?.[0]?.value || '#';
 
             return (
               <ProjectCard
@@ -152,13 +182,13 @@ const Projects = () => {
                 description={description}
                 image={imageUrl}
                 url={projectLink}
-                delay={index * 0.1} 
+                delay={index * 0.2} // Staggered delay for each card
               />
             );
           })}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
