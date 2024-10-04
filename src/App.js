@@ -1,17 +1,24 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
 import SkillsTechnologies from './components/SkillsTechnologies';
 import ContactForm from './components/ContactForm';
+import Navbar from './components/Navbar';
+import Pricing from './components/Pricing';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import './index.css'; 
 import LocalWebServicesSection from './components/LocalWebServicesSection';
 import BackgroundVideo from './components/BackgroundVideo';
 import StickyShapes from './components/StickyShapes';
+import AddOnsSection from './components/AddOnSection.js'; // Corrected import path for AddOnsSection
+import MaintenancePlans from './components/MaintenancePlans'; // New import for MaintenancePlans
+import HowItWorks from './components/HowItWorks'; // New import for HowItWorks
+import AddOns from './components/AddOns.js';
+import Footer from './components/Footer.js';
 
 function App() {
   return (
@@ -23,63 +30,40 @@ function App() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Navbar */}
+        <Navbar />
+
         {/* Sticky Background Video */}
         <BackgroundVideo />
 
-        {/* Add Sticky Shapes here so they stay on top of the video */}
-        <StickyShapes />
-
-        {/* Header */}
-        <header className="text-center p-10 bg-black bg-opacity-80 neon-header">
-          <h1 className="text-5xl font-bold neon-text breathing-text">Nico's Portfolio</h1>
-          <p className="mt-3 text-xl neon-subtext breathing-text-small">Frontend Engineer | Designer</p>
-        </header>
-
         {/* Routes */}
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero />
-                <Projects />
-                <LocalWebServicesSection />
-                <SkillsTechnologies />
-                <ContactForm />
-              </>
-            }
-          />
+          <Route path="/" element={<>
+            <StickyShapes />
+            <Hero />
+         
+            <Projects />
+            <LocalWebServicesSection />
+          </>} />
+          
+          <Route path="/projects" element={<>
+            <Projects /> 
+            <SkillsTechnologies />
+          </>} />
+          
+          <Route path="/pricing" element={
+            <>
+            <Pricing />
+            <AddOns />
+            <MaintenancePlans />
+            </>
+            } />
+          <Route path="/maintenance-plans" element={<MaintenancePlans />} /> {/* Route for Maintenance Plans */}
+          <Route path="/how-it-works" element={<HowItWorks />} /> {/* Route for How it Works */}
+          <Route path="/contact" element={<ContactForm />} />
         </Routes>
 
-        {/* Footer */}
-        <footer className="mt-10 text-center p-5 neon-footer">
-          <div className="flex justify-center space-x-6">
-            <a
-              href="https://github.com/Nloperena"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="neon-icon hover:text-pink-500"
-            >
-              <FontAwesomeIcon icon={faGithub} className="text-4xl" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/nicholas-loperena-022813185/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="neon-icon hover:text-blue-500"
-            >
-              <FontAwesomeIcon icon={faLinkedin} className="text-4xl" />
-            </a>
-            <a
-              href="/assets/Resume-Nicholas%20Loperena.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="neon-icon hover:text-green-500"
-            >
-              <FontAwesomeIcon icon={faFileAlt} className="text-4xl" />
-            </a>
-          </div>
-        </footer>
+       <Footer />
       </motion.div>
     </Router>
   );
