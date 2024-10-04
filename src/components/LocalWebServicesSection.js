@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLaptopCode, faSearchLocation, faMobileAlt, faPaintBrush, faUsers, faEye, faHandshake, faMobile } from '@fortawesome/free-solid-svg-icons';
+import containerImg from '../assets/heroImg.png';
 
 // Animation variants for sliding in from the left and fading in
 const slideInLeft = {
@@ -44,6 +45,7 @@ const LocalWebServicesSection = () => {
 
   return (
     <section className="local-web-services-section py-16 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 animate-gradient text-white relative overflow-hidden">
+      
       {/* Rotating SVGs */}
       {/* Top-left SVG */}
       <div
@@ -64,6 +66,16 @@ const LocalWebServicesSection = () => {
           <polygon points="50,10 90,35 90,75 50,90 10,75 10,35" stroke="white" strokeWidth="6" fill="none" />
         </svg>
       </div>
+
+      {/* Background Image (heroImg) */}
+      <div
+        className="absolute bottom-0 left-0 w-[300px] h-[300px] opacity-70 z-[-1]"
+        style={{
+          backgroundImage: `url(${containerImg})`,
+          backgroundSize: 'cover',
+          backgroundBlendMode: 'multiply',
+        }}
+      ></div>
 
       {/* Gradient Overlay for Better Contrast */}
       <div className="absolute inset-0 bg-black bg-opacity-40 z-[-1]"></div>

@@ -11,6 +11,7 @@ import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import './index.css'; 
 import LocalWebServicesSection from './components/LocalWebServicesSection';
 import BackgroundVideo from './components/BackgroundVideo';
+import StickyShapes from './components/StickyShapes';
 
 function App() {
   return (
@@ -24,6 +25,9 @@ function App() {
       >
         {/* Sticky Background Video */}
         <BackgroundVideo />
+
+        {/* Add Sticky Shapes here so they stay on top of the video */}
+        <StickyShapes />
 
         {/* Header */}
         <header className="text-center p-10 bg-black bg-opacity-80 neon-header">
@@ -50,13 +54,28 @@ function App() {
         {/* Footer */}
         <footer className="mt-10 text-center p-5 neon-footer">
           <div className="flex justify-center space-x-6">
-            <a href="https://github.com/Nloperena" target="_blank" rel="noopener noreferrer" className="neon-icon hover:text-pink-500">
+            <a
+              href="https://github.com/Nloperena"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="neon-icon hover:text-pink-500"
+            >
               <FontAwesomeIcon icon={faGithub} className="text-4xl" />
             </a>
-            <a href="https://www.linkedin.com/in/nicholas-loperena-022813185/" target="_blank" rel="noopener noreferrer" className="neon-icon hover:text-blue-500">
+            <a
+              href="https://www.linkedin.com/in/nicholas-loperena-022813185/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="neon-icon hover:text-blue-500"
+            >
               <FontAwesomeIcon icon={faLinkedin} className="text-4xl" />
             </a>
-            <a href="./assets/Resume-Nicholas Loperena.pdf" target="_blank" rel="noopener noreferrer" className="neon-icon hover:text-green-500">
+            <a
+              href="/assets/Resume-Nicholas%20Loperena.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="neon-icon hover:text-green-500"
+            >
               <FontAwesomeIcon icon={faFileAlt} className="text-4xl" />
             </a>
           </div>
