@@ -20,9 +20,9 @@ const Navbar = () => {
           <Link to="/projects" className="hover:text-blue-400">
             <FontAwesomeIcon icon={faProjectDiagram} /> Projects
           </Link>
-          <Link to="/pricing" className="hover:text-blue-400">
+          {/* <Link to="/pricing" className="hover:text-blue-400">
             <FontAwesomeIcon icon={faDollarSign} /> Pricing
-          </Link>
+          </Link> */}
           <Link to="/contact" className="hover:text-blue-400">
             <FontAwesomeIcon icon={faEnvelope} /> Contact
           </Link>

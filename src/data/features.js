@@ -1,0 +1,16 @@
+export const allFeatures = [
+    'Mobile-responsive design',
+    'SEO basics for improved visibility',
+    'Integrated contact form for lead generation',
+    'Modern and clean layout',
+    'CMS integration for easy content updates',
+    'Custom design tailored to your brand',
+    'Basic animations for enhanced engagement',
+    'E-commerce functionality for online sales',
+    'Custom animations to bring your website to life',
+    'Interactive lead capture forms',
+    'Personalized consultation and custom strategy',
+    'Advanced animations & effects for user delight',
+    'High-level performance optimization',
+    '3 months of free maintenance',
+  ];

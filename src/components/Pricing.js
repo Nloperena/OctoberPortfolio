@@ -1,4 +1,3 @@
-// components/Pricing.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -25,33 +24,36 @@ const Pricing = () => {
   ];
 
   return (
-    <motion.div 
-      className="pricing-section py-20 bg-gray-800 text-white" 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      transition={{ duration: 0.8 }}
-    >
-      <h2 className="text-center text-4xl font-bold mb-10">Web Development Plans</h2>
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {pricingPlans.map((plan, index) => (
-          <motion.div 
-            key={index} 
-            className="pricing-card bg-gray-900 p-6 rounded-lg text-center shadow-lg" 
-            whileHover={{ scale: 1.05 }}
-          >
-            <h3 className="text-2xl font-bold mb-4">{plan.title}</h3>
-            <p className="text-xl font-semibold mb-4">{plan.price}</p>
-            <p className="mb-6">{plan.description}</p>
-            <ul className="mb-6">
-              {plan.features.map((feature, idx) => (
-                <li key={idx} className="mb-2">{feature}</li>
-              ))}
-            </ul>
-            <button className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded">Choose Plan</button>
-          </motion.div>
-        ))}
+    <section className="pricing-section p-10 flex justify-center items-center min-h-screen">
+      <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg p-8 w-full max-w-5xl">
+        <h2 className="text-2xl font-bold mb-6 text-white text-center">Web Development Plans</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {pricingPlans.map((plan, index) => (
+            <motion.div
+              key={index}
+              className={`transition transform p-4 rounded-md
+                ${index === 1 
+                  ? 'bg-blue-700 ring-4 ring-blue-500 scale-105' // Similar to the highlighted add-on cards
+                  : 'bg-white bg-opacity-10 border border-gray-700 hover:scale-105 hover:bg-opacity-20'}`
+              }
+              whileHover={{ scale: 1.05 }}
+            >
+              <h3 className="text-lg font-semibold text-white mb-2">{plan.title}</h3>
+              <p className="text-xl font-semibold text-white mb-4">{plan.price}</p>
+              <p className="text-sm text-white mb-6">{plan.description}</p>
+              <ul className="mb-6 text-white">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="mb-2">{feature}</li>
+                ))}
+              </ul>
+              <button className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded">
+                Choose Plan
+              </button>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </motion.div>
+    </section>
   );
 };
 

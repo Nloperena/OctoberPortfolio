@@ -1,7 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// Import brand icons from the correct package
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFileAlt } from '@fortawesome/free-solid-svg-icons'; // This stays the same as it is from the solid icons
 
 const Footer = () => {
   return (
@@ -26,12 +27,15 @@ const Footer = () => {
             <FontAwesomeIcon icon={faLinkedin} /> LinkedIn
           </a>
           <a
-            href="/assets/NicholasNicoLoperena-Resume.pdf"
-            download="NicholasNicoLoperena-Resume.pdf"  // Forces the browser to download the file
+            href="/NicholasNicoLoperena-Resume.pdf"
+            download="NicholasNicoLoperena-Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-2xl hover:text-blue-400 underline-animation"
           >
             <FontAwesomeIcon icon={faFileAlt} /> Resume
           </a>
+
         </div>
 
         {/* Copyright Section */}
