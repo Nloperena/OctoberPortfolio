@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PlanCard from './components/PlanCard';
 import ComparisonTable from './components/ComparisonTable';
-import HeroSection from './components/HeroSection';
+import HeroSection from './components/Herosection';
 import AddOnSection from './components/AddOnSection';
 import Navbar from './components/Navbar';
 import BackgroundVideo from './components/BackgroundVideo';
