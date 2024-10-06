@@ -26,7 +26,7 @@ const heroVariants = {
   },
   exit: {
     opacity: 0,
-    y: -100, // Fade out and rise up when leaving
+    y: -100, // Fade out and rise up when leaving animation
     transition: {
       duration: 0.5,
       ease: 'easeIn',
@@ -94,7 +94,7 @@ const HeroSection = () => {
       exit="exit"
       variants={heroVariants}
     >
-      {/* Glassmorphism Background */}
+      {/* Glassmorphism -Background */}
       <div className="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-30 rounded-lg z-0"></div>
 
       {/* Main Content Container */}
