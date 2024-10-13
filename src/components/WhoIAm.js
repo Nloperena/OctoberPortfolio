@@ -6,7 +6,7 @@ import Image from '../assets/heroImg.jpg';
 
 // Variants for the container and text animations
 const containerVariants = {
-  hidden: { opacity: 0, x: '-3vw' }, // Slide in from the left with reduced distance for a snappier effect
+  hidden: { opacity: 0, x: '-3vw' },
   visible: {
     opacity: 1,
     x: 0,
@@ -15,51 +15,51 @@ const containerVariants = {
       stiffness: 100,
       damping: 15,
       when: 'beforeChildren',
-      staggerChildren: 0.01, // Elements unravel faster with minimal delay for snappier effect
-      duration: 0.2, // Faster animation duration for snappier appearance
+      staggerChildren: 0.01,
+      duration: 0.2,
       ease: 'easeOut',
     },
   },
   exit: {
     opacity: 0,
-    x: '3vw', // Slide out to the right on exit with reduced distance
+    x: '3vw',
     transition: { duration: 0.15, ease: 'easeInOut' },
   },
 };
 
 // Text animation variants
 const textVariants = {
-  hidden: { opacity: 0, x: -5 }, // Fade in from the left with reduced distance
+  hidden: { opacity: 0, x: -5 },
   visible: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 0.2, // Faster text animation for snappier effect
+      duration: 0.2,
       ease: 'easeOut',
     },
   },
   exit: {
     opacity: 0,
-    x: 5, // Move right and fade out with reduced distance
+    x: 5,
     transition: { duration: 0.15, ease: 'easeInOut' },
   },
 };
 
 // UCF Section animation variants
 const ucfVariants = {
-  hidden: { opacity: 0, y: 20 }, // Fade in and slide up from below
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3, // Faster animation for snappier effect
+      duration: 0.3,
       ease: 'easeOut',
-      delay: 0.5, // Delay to start after other animations are complete
+      delay: 0.5,
     },
   },
   exit: {
     opacity: 0,
-    y: 20, // Slide down and fade out
+    y: 20,
     transition: { duration: 0.2, ease: 'easeInOut' },
   },
 };
@@ -67,11 +67,10 @@ const ucfVariants = {
 const WhoIAm = () => {
   const controls = useAnimation();
   const { ref, inView } = useInView({
-    triggerOnce: false, // Allow re-triggering as we scroll in/out
-    threshold: 0.1, // Trigger animation slightly later for smoother appearance
+    triggerOnce: false,
+    threshold: 0.1,
   });
 
-  // Start animation when in view, reverse when out of view
   useEffect(() => {
     if (inView) {
       controls.start('visible');
@@ -88,24 +87,22 @@ const WhoIAm = () => {
       animate={controls}
       exit="exit"
       variants={containerVariants}
-      style={{ width: '100%' }} // Ensure section takes full width
+      style={{ width: '100%' }}
     >
       {/* Image Section */}
       <motion.div
         className="md:w-1/2 w-full flex justify-center mb-6 md:mb-0 relative"
         variants={containerVariants}
-        style={{ width: '100%' }} // Ensure image container takes full width
+        style={{ width: '100%' }}
       >
-        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-40 mix-blend-multiply z-10 rounded-lg"></div>
-        {/* Image */}
         <motion.img
           src={Image}
-          alt="Who I Am"
+          alt="Experienced Web Designer and Developer for Orlando and Kissimmee"
           className="object-cover w-full h-full rounded-lg"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }} // Snappier fade and slight scale animation
+          transition={{ duration: 0.2, ease: 'easeOut' }}
         />
       </motion.div>
 
@@ -115,26 +112,22 @@ const WhoIAm = () => {
         variants={containerVariants}
         style={{ width: '100%' }}
       >
-        <motion.h2
-          className="text-3xl font-bold mb-4"
-          variants={textVariants}
-        >
+        <motion.h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6" variants={textVariants}>
           Who I Am
         </motion.h2>
-        <motion.p className="text-lg mb-4" variants={textVariants}>
-          I'm a passionate web developer and designer with a background in
-          graphic design, video editing, and motion graphics. My goal is to
-          create visually stunning websites that offer a seamless user experience while bringing unique ideas to life.
+        <motion.p className="text-lg md:text-2xl lg:text-3xl mb-6 leading-relaxed font-light" variants={textVariants}>
+          I am a dedicated web designer and developer based in Central Florida, specializing in creating dynamic, user-friendly websites for local businesses in Orlando and Kissimmee. With over a decade of experience in graphic design, video editing, and motion graphics, I bring a unique perspective to web development, blending creativity with technical expertise.
         </motion.p>
-        <motion.p className="text-lg" variants={textVariants}>
-          With a love for creativity and technology, I constantly strive to
-          improve my skills and push the boundaries of what's possible. Let's
-          work together to create something amazing!
+        <motion.p className="text-lg md:text-2xl lg:text-3xl mb-6 leading-relaxed font-light" variants={textVariants}>
+          My journey in the tech world has been diverse, spanning roles in IT, design, and digital marketing. I've worked with small businesses across various industries, helping them establish a strong online presence through custom web design and strategic SEO practices. I understand the importance of building websites that not only look great but also rank well on search engines, driving more local traffic and converting visitors into loyal customers.
+        </motion.p>
+        <motion.p className="text-lg md:text-2xl lg:text-3xl leading-relaxed font-light" variants={textVariants}>
+          From e-commerce stores to informative business sites, I’ve developed solutions tailored to the unique needs of businesses in Orlando, Kissimmee, and beyond. My goal is to create websites that reflect your brand’s personality and resonate with your target audience, ensuring a seamless experience across all devices.
         </motion.p>
 
         {/* UCF Certification */}
         <motion.div
-          className="mt-6 flex items-center space-x-4"
+          className="mt-8 flex items-center space-x-6"
           variants={ucfVariants}
           initial="hidden"
           animate={controls}
@@ -142,16 +135,22 @@ const WhoIAm = () => {
         >
           <motion.img
             src={BadgeImage}
-            alt="UCF Certification Badge"
-            className="w-16 h-16 object-contain"
+            alt="UCF Coding Bootcamp Graduate"
+            className="w-16 h-16 lg:w-20 lg:h-20 object-contain"
             initial={{ opacity: 0, rotate: -10 }}
             animate={{ opacity: 1, rotate: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }} // Snappier rotate animation for more dynamic entrance
+            transition={{ duration: 0.25, ease: 'easeOut' }}
           />
           <div>
-            <motion.h3 className="text-xl font-semibold" variants={ucfVariants}>UCF Coding Boot Camp</motion.h3>
-            <motion.p className="text-gray-400" variants={ucfVariants}>Full-Stack Web Development Graduate (2019)</motion.p>
-            <motion.p className="text-gray-400" variants={ucfVariants}>Credential ID: CREDLY-19824013</motion.p>
+            <motion.h3 className="text-xl md:text-2xl lg:text-3xl font-semibold" variants={ucfVariants}>
+              UCF Coding Boot Camp
+            </motion.h3>
+            <motion.p className="text-gray-400 text-lg md:text-xl lg:text-2xl leading-snug" variants={ucfVariants}>
+              Full-Stack Web Development Graduate (2019)
+            </motion.p>
+            <motion.p className="text-gray-400 text-lg md:text-xl lg:text-2xl leading-snug" variants={ucfVariants}>
+              Credential ID: CREDLY-19824013
+            </motion.p>
           </div>
         </motion.div>
       </motion.div>
