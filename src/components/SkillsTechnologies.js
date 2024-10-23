@@ -1,211 +1,156 @@
 // src/components/SkillsTechnologies.js
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faHtml5, faCss3Alt, faJsSquare, faReact, faNodeJs, faPython, faGitAlt, faJava, 
-  faFigma, faShopify, faPhp, faBootstrap, faWordpress, faWindows 
+  faHtml5, faCss3Alt, faJsSquare, faReact, faNodeJs, faPython, faFigma 
 } from '@fortawesome/free-brands-svg-icons';
-import {
-  faDatabase, faCode, faCogs, faServer, faNetworkWired, faPencilRuler, faEnvelope, 
-  faProjectDiagram, faSitemap, faSearch, faMousePointer, faLock, faUserShield 
+import { 
+  faCode, faServer, faNetworkWired, faLock, faPencilRuler, faDatabase, faPalette, faLaptopCode, faShieldAlt 
 } from '@fortawesome/free-solid-svg-icons';
 
-import bentoimg from '../assets/headshot.jpg';
-
-// Skill categories with appropriate icons
+// Skill categories with relevant icons
 const skillCategories = [
   {
-    genre: 'Web Development',
+    category: 'Design',
+    icon: faPalette,
+    skills: [
+      { name: 'Figma', icon: faFigma },
+      { name: 'Photoshop', icon: faPencilRuler },
+      { name: 'Illustrator', icon: faPencilRuler },
+      { name: 'UI/UX Design', icon: faFigma },
+    ],
+  },
+  {
+    category: 'Development',
+    icon: faLaptopCode,
     skills: [
       { name: 'HTML5', icon: faHtml5 },
       { name: 'CSS3', icon: faCss3Alt },
       { name: 'JavaScript', icon: faJsSquare },
-      { name: 'TypeScript', icon: faJsSquare }, // Placeholder, no TypeScript icon in FontAwesome
       { name: 'React', icon: faReact },
       { name: 'Node.js', icon: faNodeJs },
+      { name: 'Python', icon: faPython },
+      { name: 'Git', icon: faCode },
       { name: 'MySQL', icon: faDatabase },
-      { name: 'PHP', icon: faPhp },
-      { name: 'MongoDB', icon: faDatabase },
-      { name: 'WordPress', icon: faWordpress },
     ],
   },
   {
-    genre: 'Design Tools',
+    category: 'IT',
+    icon: faShieldAlt,
     skills: [
-      { name: 'Figma', icon: faFigma },
-      { name: 'Photoshop', icon: faPencilRuler }, // Generic design tool icon
-      { name: 'Illustrator', icon: faPencilRuler }, // Generic design tool icon
-      { name: 'After Effects', icon: faPencilRuler }, // Generic design tool icon
-      { name: 'Premier Pro', icon: faPencilRuler }, // Generic design tool icon
-      { name: '3D Modeling (Blender)', icon: faPencilRuler }, // Placeholder for 3D modeling
-    ],
-  },
-  {
-    genre: 'Marketing Tools & Platforms',
-    skills: [
-      { name: 'SEO (Search Engine Optimization)', icon: faSearch },
-      { name: 'MailChimp', icon: faEnvelope },
-      { name: 'Shopify', icon: faShopify },
-      { name: 'Email Marketing', icon: faEnvelope },
-    ]
-  },
-  {
-    genre: 'Networking & Security',
-    skills: [
-      { name: 'Networking (Cisco, OSPF, Packet Tracer)', icon: faNetworkWired },
-      { name: 'Wireshark', icon: faLock },
-      { name: 'Kali Linux', icon: faUserShield }, // Placeholder for Kali Linux
+      { name: 'Networking', icon: faNetworkWired },
       { name: 'Cybersecurity', icon: faLock },
-    ],
-  },
-  {
-    genre: 'Project & Team Tools',
-    skills: [
-      { name: 'Git', icon: faGitAlt },
-      { name: 'Project Management', icon: faProjectDiagram },
-      { name: 'Team Collaboration (Slack, Discord)', icon: faSitemap }, // Placeholder
-      { name: 'Emailjs', icon: faEnvelope }, // Placeholder
+      { name: 'Server Management', icon: faServer },
+      { name: 'Cloud Computing', icon: faCode },
     ],
   },
 ];
 
-// Custom Animation for Slide Up Effect
-const splitAndSlideUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.2,
-      type: 'spring',
-      stiffness: 50,
-    },
-  }),
-};
-
 const SkillsTechnologies = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [rotationAngle, setRotationAngle] = useState(0);
 
-  const handleMouseMove = (e) => {
-    setMousePosition({
-      x: e.clientX / window.innerWidth,
-      y: e.clientY / window.innerHeight,
-    });
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    setRotationAngle(rotationAngle + 360); // Rotate by 360 degrees
   };
 
   return (
-    <section className="skills-technologies-section py-32 mt-16 mb-16 relative overflow-hidden">
-      {/* Animated Gradient Background */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 animate-gradient"
-        style={{ zIndex: -2 }}
-      />
-
-      {/* Gradient Overlay for Better Contrast */}
-      <div className="absolute inset-0 bg-black bg-opacity-40 z-[-1]"></div>
-
-      <div 
-        className="max-w-7xl mx-auto px-8 lg:px-16 relative rounded-3xl shadow-2xl animate-breathingGlow"
-        onMouseMove={handleMouseMove}
-        style={{
-          background: `radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, #6a00ff, #00008b)`,
-          transition: 'background 0.1s ease',
-        }}
-      >
-        {/* Breathing Border */}
-        <motion.div
-          className="absolute inset-0 border-4 border-cyan-400 rounded-3xl shadow-2xl"
-          initial={{ opacity: 0.6 }}
-          animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          style={{ zIndex: -1 }}
-        />
-
-        {/* Aligning Title to the Left and Adding Subheading */}
+    <section className="skills-section py-32 relative overflow-hidden">
+      <div className="container mx-auto px-8 lg:px-16 relative max-w-7xl">
+        
+        {/* Skills Heading and Subheading */}
         <motion.h2
-          className="text-5xl lg:text-6xl font-bold text-left mb-6 neon-text pt-10" // Added top padding
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          className="text-5xl font-extrabold text-white mb-4 text-center"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }} // Keep opacity at 1
+          transition={{ duration: 0.3 }}
         >
-          Skills & Technologies
+          Skills
         </motion.h2>
-        <motion.h3
-          className="text-xl lg:text-2xl text-left text-gray-200 mb-16"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
+        <motion.p
+          className="text-lg text-gray-300 mb-12 text-center"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }} // Keep opacity at 1
+          transition={{ duration: 0.3 }}
         >
-          A comprehensive overview of the tools and technologies I excel in.
-        </motion.h3>
+          Explore my expertise across different areas
+        </motion.p>
 
-        {/* Skills Grid */}
-        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 pb-10"> {/* Added bottom padding */}
+        {/* Main Category Buttons in Centered Grid */}
+        <div className="category-buttons flex justify-center items-center space-x-12 flex-wrap relative">
           {skillCategories.map((category, index) => (
             <motion.div
-              key={category.genre}
-              className="skills-genre p-8 bg-black bg-opacity-70 rounded-3xl shadow-inner"
-              initial="hidden"
-              animate="visible"
-              variants={splitAndSlideUp}
-              custom={index}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: '0px 0px 20px 10px rgba(0, 255, 255, 0.8)',
-                backgroundImage: 'linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 255, 255, 0.1))',
-                transition: {
-                  duration: 0.3,
-                  ease: 'easeInOut'
-                },
-              }}
-              whileTap={{
-                scale: 1.05,
-                boxShadow: '0px 0px 20px 10px rgba(0, 255, 255, 0.8)', // For mobile tap interaction
+              key={category.category}
+              className={`category-button w-48 h-48 ${
+                selectedCategory === category.category
+                  ? 'bg-gradient-to-r from-blue-400 to-teal-500 shadow-2xl transform scale-110 shadow-cyan-500/50'
+                  : 'bg-gradient-to-r from-blue-400 to-teal-500 shadow-lg'
+              } rounded-full flex flex-col items-center justify-center text-center cursor-pointer transition-all`}
+              onClick={() => handleCategoryClick(category.category)}
+              whileHover={{ scale: 1.1 }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2, duration: 0.4 }}
+              style={{
+                boxShadow:
+                  selectedCategory === category.category
+                    ? '0 0 20px 8px rgba(0, 255, 255, 0.7), 0 10px 20px rgba(0, 0, 0, 0.3)'
+                    : '',
               }}
             >
-              <h3 className="text-2xl lg:text-3xl mb-6 text-cyan-400">{category.genre}</h3>
-              <table className="w-full table-auto">
-                <tbody>
-                  {category.skills.map((skill, i) => (
-                    <tr key={i}>
-                      <td className="py-3">
-                        <FontAwesomeIcon icon={skill.icon} className="text-cyan-400 w-6 h-6 mr-3" />
-                      </td>
-                      <td className="py-3 text-md lg:text-lg">{skill.name}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {/* Icon */}
+              <FontAwesomeIcon
+                icon={category.icon}
+                className="text-white w-16 h-16 mb-2"
+                style={{
+                  filter: selectedCategory === category.category ? 'drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.7))' : '',
+                }}
+              />
+              {/* Category Name */}
+              <span className="text-white text-lg font-bold">{category.category}</span>
             </motion.div>
           ))}
+        </div>
 
-          {/* Adding a final image box */}
-          <motion.div
-            className="skills-genre p-8 bg-cover bg-center rounded-3xl shadow-inner relative"
-            initial="hidden"
-            animate="visible"
-            variants={splitAndSlideUp}
-            custom={skillCategories.length}
-            style={{
-              backgroundImage: `url(${bentoimg})`,
-              height: '350px', // Increased height
-              boxShadow: 'inset 0 4px 10px rgba(0, 0, 0, 0.6)',
-            }}
-            whileHover={{
-              scale: 1.05,
-              boxShadow: '0px 0px 20px 10px rgba(0, 255, 255, 0.8)',
-              transition: {
-                duration: 0.3,
-                ease: 'easeInOut'
-              },
-            }}
-            whileTap={{
-              scale: 1.05,
-              boxShadow: '0px 0px 20px 10px rgba(0, 255, 255, 0.8)', // Mobile tap interaction
-            }}
-          ></motion.div>
+        {/* Rotating Container for Skills List */}
+        <motion.div
+          className="skills-container flex justify-center items-center mt-16"
+          style={{
+            perspective: '1000px', // Top-down perspective
+          }}
+          animate={{ rotateY: rotationAngle }} // Rotate the container on Y-axis
+          transition={{ type: 'spring', stiffness: 50, damping: 20 }}
+        >
+          {/* Skills for Selected Category */}
+          {selectedCategory && (
+            <motion.div
+              className="skills-list bg-gray-800 p-8 rounded-lg shadow-lg grid grid-cols-2 lg:grid-cols-4 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {skillCategories
+                .find((cat) => cat.category === selectedCategory)
+                .skills.map((skill, i) => (
+                  <motion.div
+                    key={i}
+                    className="skill-item flex flex-col items-center justify-center text-center"
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    style={{
+                      filter: 'drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.8))',
+                    }}
+                  >
+                    <FontAwesomeIcon icon={skill.icon} className="text-teal-400 w-12 h-12 mb-2" />
+                    <span className="text-white text-md">{skill.name}</span>
+                  </motion.div>
+                ))}
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </section>
