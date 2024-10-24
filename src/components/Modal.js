@@ -1,5 +1,3 @@
-// src/components/Modal.js
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import emailjs from 'emailjs-com'; // Import EmailJS
@@ -76,10 +74,11 @@ const Modal = ({ closeModal }) => {
     phone: '',
     email: '',
     message: '',
-    budget: '', // Add budget field
+    budget: '',
   });
 
   const [submitStatus, setSubmitStatus] = useState(null); // To track success or failure
+  const [countdown, setCountdown] = useState(4); // Initial countdown state
 
   useEffect(() => {
     // Log environment variables on component mount
@@ -87,6 +86,21 @@ const Modal = ({ closeModal }) => {
     console.log("Service ID:", process.env.REACT_APP_EMAILJS_SERVICE_ID);
     console.log("Template ID:", process.env.REACT_APP_EMAILJS_TEMPLATE_ID);
   }, []);
+
+  useEffect(() => {
+    if (submitStatus === 'success') {
+      // Start countdown when form is successfully submitted
+      const intervalId = setInterval(() => {
+        setCountdown((prevCountdown) => {
+          if (prevCountdown === 1) {
+            clearInterval(intervalId); // Stop the interval once the countdown reaches 0
+            closeModal(); // Close the modal
+          }
+          return prevCountdown - 1;
+        });
+      }, 1000); // Decrement every second
+    }
+  }, [submitStatus, closeModal]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,14 +114,12 @@ const Modal = ({ closeModal }) => {
     e.preventDefault();
 
     const templateParams = {
-      from_name: formData.name,
-      phone: formData.phone,
-      from_email: formData.email,
+      user_name: formData.name,
+      user_phone: formData.phone,
+      user_email: formData.email,
       message: formData.message,
-      budget: formData.budget,
+      user_budget: formData.budget,
     };
-
-    console.log("Submitting with the following template parameters:", templateParams);
 
     emailjs
       .send(
@@ -119,7 +131,6 @@ const Modal = ({ closeModal }) => {
       .then((response) => {
         console.log('SUCCESS!', response.status, response.text);
         setSubmitStatus('success');
-        setTimeout(() => closeModal(), 4000);
       })
       .catch((err) => {
         console.error('FAILED...', err);
@@ -137,7 +148,7 @@ const Modal = ({ closeModal }) => {
 
   return (
     <>
-      {/* Overlay with fade effect */}
+      {/* Overlay */}
       <motion.div
         onClick={closeModal}
         className="fixed inset-0 bg-black z-40"
@@ -147,7 +158,7 @@ const Modal = ({ closeModal }) => {
         exit="exit"
       ></motion.div>
 
-      {/* Modal Container with entry and exit animations */}
+      {/* Modal Container */}
       <motion.div
         className="fixed inset-0 flex items-center justify-center p-8 z-50"
         variants={modalVariants}
@@ -193,15 +204,13 @@ const Modal = ({ closeModal }) => {
           animate="visible"
         ></motion.div>
 
-        {/* Modal Content with exit animation */}
+        {/* Modal Content */}
         <motion.div
           className="max-w-4xl p-8 rounded-lg shadow-lg combined-glassmorphic relative"
-          variants={modalContentVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
-          {/* Modal Content */}
           <div className="p-6 rounded-lg">
             {/* Close Button */}
             <div className="flex justify-between items-center mb-4">
@@ -231,7 +240,7 @@ const Modal = ({ closeModal }) => {
                 animate={{ opacity: 1 }}
               >
                 <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
-                Your message has been sent successfully! The window will close in 4 seconds.
+                Your message has been sent successfully! Closing in {countdown} seconds.
               </motion.p>
             ) : submitStatus === 'error' ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

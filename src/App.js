@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -11,6 +10,7 @@ import Footer from './components/Footer';
 import Skills from './components/SkillsTechnologies';
 import Benefits from './components/BenefitsSection';
 import SpecialOffer from './components/SpecialOffer';
+import BackgroundVideo from './components/BackgroundVideo'; // Import your background video component
 
 function App() {
   const [showModal, setShowModal] = useState(false); // Modal state
@@ -20,7 +20,10 @@ function App() {
 
   return (
     <Router>
-      <div className="App bg-gray-900 min-h-screen text-white overflow-hidden">
+      <div className="App bg-gray-900 min-h-screen text-white overflow-hidden relative">
+        {/* Background video */}
+        <BackgroundVideo /> 
+
         <Navbar onContactClick={openModal} /> {/* Pass down the modal trigger */}
         
         {/* Routes */}

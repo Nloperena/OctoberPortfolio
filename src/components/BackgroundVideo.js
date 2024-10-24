@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const BackgroundVideo = () => {
   const [isVertical, setIsVertical] = useState(window.innerWidth < window.innerHeight);
+  const [fadeIn, setFadeIn] = useState(false); // State to handle fade-in effect
 
   // Detect screen orientation change (vertical or horizontal)
   useEffect(() => {
@@ -13,8 +14,19 @@ const BackgroundVideo = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Trigger fade-in effect when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFadeIn(true); // Set fadeIn to true after a small delay
+    }, 100); // 100ms delay to ensure smooth transition
+
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, []);
+
   return (
-    <div className="background-video-container fixed top-0 left-0 w-full h-full z-[-1] overflow-hidden">
+    <div
+      className={`background-video-container fixed top-0 left-0 w-full h-full z-[-1] overflow-hidden transition-opacity duration-1000 ease-in-out ${fadeIn ? 'opacity-100' : 'opacity-0'}`}
+    >
       {isVertical ? (
         // Vertical display video for mobile portrait
         <iframe
