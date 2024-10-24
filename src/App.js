@@ -34,9 +34,13 @@ function App() {
               <div>
                 <HeroSection openModal={openModal} /> {/* Pass openModal prop */}
                 <WhoIam />
-                <Benefits />
-                <Projects />
                 <SpecialOffer openModal={openModal} /> {/* Pass openModal prop */}
+                <Projects />
+                <Benefits />
+                
+                <Skills />
+                
+                
               </div>
             }
           />
@@ -44,7 +48,7 @@ function App() {
             path="/projects"
             element={
               <div>
-                <Skills />
+                
                 <SpecialOffer openModal={openModal} /> {/* Pass openModal prop */}
                 <Projects />
               </div>
