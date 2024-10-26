@@ -34,11 +34,12 @@ function App() {
               <div>
                 <HeroSection openModal={openModal} /> {/* Pass openModal prop */}
                 <WhoIam />
+                <Skills />
                 <SpecialOffer openModal={openModal} /> {/* Pass openModal prop */}
                 <Projects />
                 <Benefits />
                 
-                <Skills />
+                
                 
                 
               </div>

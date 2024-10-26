@@ -1,23 +1,29 @@
 // src/components/WhoIAm.js
-import React, { useEffect } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+
+import React, { useEffect, useState } from 'react';
+import { createClient } from 'contentful';
+import { motion } from 'framer-motion';
 import BadgeImage from '../assets/ucfLogo.jpg';
 import Image from '../assets/heroImg.jpg';
+import GraduationPhoto from '../assets/graduationphoto.jpg';
 
-// Variants for the container and text animations
+const client = createClient({
+  space: process.env.REACT_APP_CONTENTFUL_SPACE_ID,
+  accessToken: process.env.REACT_APP_CONTENTFUL_ACCESS_TOKEN,
+  environment: 'master',
+});
+
 const containerVariants = {
   hidden: { opacity: 0, x: '-3vw' },
   visible: {
     opacity: 1,
     x: 0,
     transition: {
-      type: 'spring',
-      stiffness: 100,
-      damping: 15,
+      staggerChildren: 0.2,
       when: 'beforeChildren',
-      staggerChildren: 0.01,
-      duration: 0.2,
+      type: 'spring',
+      stiffness: 120,
+      damping: 12,
       ease: 'easeOut',
     },
   },
@@ -28,143 +34,146 @@ const containerVariants = {
   },
 };
 
-// Text animation variants
-const textVariants = {
-  hidden: { opacity: 0, x: -5 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.2,
-      ease: 'easeOut',
-    },
-  },
-  exit: {
-    opacity: 0,
-    x: 5,
-    transition: { duration: 0.15, ease: 'easeInOut' },
-  },
-};
-
-// UCF Section animation variants
-const ucfVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: 'easeOut',
-      delay: 0.5,
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: 20,
-    transition: { duration: 0.2, ease: 'easeInOut' },
-  },
-};
-
 const WhoIAm = () => {
-  const controls = useAnimation();
-  const { ref, inView } = useInView({
-    triggerOnce: false,
-    threshold: 0.1,
-  });
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (inView) {
-      controls.start('visible');
-    } else {
-      controls.start('hidden');
-    }
-  }, [controls, inView]);
+    const fetchHeroImages = async () => {
+      try {
+        const response = await client.getEntries({ content_type: 'portfolioProjects' });
+        const fetchedImages = response.items.map((item) => {
+          const imageUrl = item.fields.projectHeader?.fields?.file?.url
+            ? `https:${item.fields.projectHeader.fields.file.url}`
+            : null;
+          const projectUrl = item.fields.link?.content?.[0]?.content?.[0]?.value || '#';
+          return { imageUrl, projectUrl };
+        });
+        setImages(fetchedImages);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+    fetchHeroImages();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center text-white">Loading images...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">Error loading images: {error.message}</div>;
+  }
 
   return (
     <motion.section
-      className="relative flex flex-col-reverse md:flex-row items-center py-12 bg-gray-900 text-white"
-      ref={ref}
+      className="flex flex-col py-12 bg-gray-900 text-white space-y-12"
       initial="hidden"
-      animate={controls}
+      animate="visible"
       exit="exit"
       variants={containerVariants}
-      style={{ width: '100%' }}
     >
-      {/* Text Section */}
-      <motion.div
-        className="md:w-1/2 w-full px-6 md:px-12 relative z-20"
-        variants={containerVariants}
-        style={{ width: '100%' }}
-      >
-        <motion.h2
-          className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6"
-          variants={textVariants}
-        >
-          Hi, I'm Nico! 👋
-        </motion.h2>
-        {/* Short Description */}
-        <motion.p
-          className="text-lg md:text-2xl lg:text-3xl mb-6 leading-relaxed font-light"
-          variants={textVariants}
-        >
-          I'm a web designer and developer based in Central Florida with over a decade of experience in IT and over 5 years in design, video editing, and motion graphics. I specialize in creating dynamic, user-friendly websites for local businesses.
-        </motion.p>
-
-        {/* UCF Certification */}
+      {/* First Row: Text on Left, Image on Right */}
+      <div className="flex flex-col-reverse md:flex-row items-center justify-center md:justify-between w-full">
         <motion.div
-          className="mt-8 flex items-center space-x-6"
-          variants={ucfVariants}
-          initial="hidden"
-          animate={controls}
-          exit="exit"
+          className="md:w-1/2 w-full px-6 md:px-12 text-center md:text-left"
+          variants={containerVariants}
+        >
+          <motion.h2
+            className="text-4xl sm:text-5xl font-extrabold mb-6 text-white leading-tight"
+            style={{
+              textShadow: '3px 3px 15px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            Your Local Web Developer in Central Florida
+          </motion.h2>
+
+          <motion.p
+            className="text-lg sm:text-xl bg-white bg-opacity-10 p-6 rounded-lg shadow-xl mx-auto md:mx-0 max-w-lg"
+            style={{
+              color: '#f0f0f0',
+              textShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            I'm Nico, a passionate web developer based in Central Florida, specializing in helping local businesses grow by building visually appealing, SEO-optimized websites.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="md:w-1/2 w-full flex items-center justify-center my-4 md:my-0"
+          variants={containerVariants}
         >
           <motion.img
-            src={BadgeImage}
-            alt="UCF Coding Bootcamp Graduate"
-            className="w-16 h-16 lg:w-20 lg:h-20 object-contain"
-            initial={{ opacity: 0, rotate: -10 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            src={Image}
+            alt="Experienced Web Designer and Developer"
+            className="w-full max-w-xs h-auto rounded-lg shadow-lg m-4"
           />
-          <div>
-            <motion.h3
-              className="text-xl md:text-2xl lg:text-3xl font-semibold"
-              variants={ucfVariants}
-            >
-              UCF Coding Boot Camp
-            </motion.h3>
-            <motion.p
-              className="text-gray-400 text-lg md:text-xl lg:text-2xl leading-snug"
-              variants={ucfVariants}
-            >
-              Full-Stack Web Development Graduate (2019)
-            </motion.p>
-            <motion.p
-              className="text-gray-400 text-lg md:text-xl lg:text-2xl leading-snug"
-              variants={ucfVariants}
-            >
-              Credential ID: CREDLY-19824013
-            </motion.p>
-          </div>
         </motion.div>
-      </motion.div>
+      </div>
 
-      {/* Image Section */}
-      <motion.div
-        className="md:w-1/2 w-full flex justify-center mb-6 md:mb-0 relative"
-        variants={containerVariants}
-        style={{ width: '100%' }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-50 mix-blend-multiply z-10 rounded-lg"></div>
-        <motion.img
-          src={Image}
-          alt="Experienced Web Designer and Developer for Orlando and Kissimmee"
-          className="object-cover w-full h-full rounded-lg"
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        />
-      </motion.div>
+      {/* Second Row: Image on Left, Text on Right with UCF Badge */}
+      <div className="flex flex-col md:flex-row-reverse items-center justify-center md:justify-between w-full">
+        <motion.div
+          className="md:w-1/2 w-full px-6 md:px-12 text-center md:text-left"
+          variants={containerVariants}
+        >
+          <motion.h2
+            className="text-4xl sm:text-5xl font-extrabold mb-6 text-white leading-tight"
+            style={{
+              textShadow: '3px 3px 15px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            Why Choose Me?
+          </motion.h2>
+
+          <motion.p
+            className="text-lg sm:text-xl bg-white bg-opacity-10 p-6 rounded-lg shadow-xl mx-auto md:mx-0 max-w-lg"
+            style={{
+              color: '#f0f0f0',
+              textShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            As a UCF Coding Bootcamp graduate, I ensure that your website not only represents your brand but also delivers exceptional user experiences that convert visitors into customers.
+          </motion.p>
+
+          {/* UCF Badge and Text inside the "Why Choose Me" container */}
+          <motion.div
+            className="mt-4 flex items-center justify-center md:justify-start space-x-4"
+            variants={containerVariants}
+          >
+            <motion.img
+              src={BadgeImage}
+              alt="UCF Coding Bootcamp Graduate"
+              className="w-16 h-16 lg:w-20 lg:h-20"
+            />
+            <div>
+              <motion.h3 className="text-xl md:text-2xl lg:text-3xl font-semibold">
+                UCF Coding Boot Camp
+              </motion.h3>
+              <motion.p className="text-gray-400 text-lg leading-snug">
+                Full-Stack Web Development Graduate (2019)
+              </motion.p>
+              <motion.p className="text-gray-400 text-lg leading-snug">
+                Credential ID: CREDLY-19824013
+              </motion.p>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="md:w-1/2 w-full flex items-center justify-center my-4 md:my-0"
+          variants={containerVariants}
+        >
+          <motion.img
+            src={GraduationPhoto}
+            alt="Graduation Photo"
+            className="object-cover w-full max-w-xs rounded-lg shadow-lg m-4"
+          />
+        </motion.div>
+      </div>
     </motion.section>
   );
 };

@@ -1,132 +1,78 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLaptopCode, faHandshake, faRocket, faClock, faSearchLocation, faMobileAlt, faPaintBrush, faUsers, faEye, faMobile } from '@fortawesome/free-solid-svg-icons';
+import { faLaptopCode, faHandshake, faRocket, faClock, faSearchLocation, faMapMarkerAlt, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 
-// Animation variants for sliding in from the left and fading in
-const slideInLeft = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: 'easeOut' } }
+// Reuse the button hover animation and modal trigger from SpecialOffer.js
+const buttonHover = {
+  hover: { scale: 1.05, boxShadow: '0px 0px 15px rgba(255,165,0,0.5)' },
+  tap: { scale: 0.95 },
 };
 
-// Animation variants for blurring in paragraphs
-const blurIn = {
-  hidden: { opacity: 0, filter: 'blur(10px)' },
-  visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } }
-};
-
-// Staggered effect for the headlines
-const container = {
-  visible: {
-    transition: {
-      staggerChildren: 0.3
-    }
-  }
-};
-
-const BenefitsSection = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
+const BenefitsSection = ({ openModal }) => {
   const benefits = [
     {
       title: "Custom Solutions",
-      description: "I provide tailored solutions that fit your unique needs and business goals.",
-      expandedDescription: "Every project is unique, and I take the time to understand your requirements and craft a solution specifically for you.",
+      description: "I don't just build websites—I solve business problems. Each solution is tailored specifically to your needs, helping your business stand out.",
       icon: faLaptopCode
     },
     {
-      title: "Collaborative Approach",
-      description: "I believe in working closely with clients to ensure we achieve the best results together.",
-      expandedDescription: "Your insights and feedback are essential in creating a website that truly reflects your vision.",
-      icon: faHandshake
-    },
-    {
       title: "Rapid Development",
-      description: "My efficient processes ensure that your project is completed quickly without compromising quality.",
-      expandedDescription: "Using the latest tools and methodologies, I can deliver your project in a timely manner.",
+      description: "You're not just another project in the queue. I deliver high-quality results quickly, keeping your website on schedule and ready to grow.",
       icon: faRocket
     },
     {
-      title: "Timely Support",
-      description: "I offer ongoing support and maintenance to keep your website running smoothly.",
-      expandedDescription: "From updates to troubleshooting, I'm here to help you every step of the way.",
-      icon: faClock
-    },
-    {
       title: "SEO Optimization",
-      description: "I implement SEO best practices to ensure your site gets the visibility it deserves.",
-      expandedDescription: "I use targeted keywords and optimization techniques to improve your site's ranking.",
+      description: "I specialize in local SEO for Central Florida, making sure your site ranks higher for keywords that attract the right audience to your business.",
       icon: faSearchLocation
     },
     {
-      title: "Long-Term Partnership",
-      description: "I aim to build lasting relationships with my clients for future projects and collaborations.",
-      expandedDescription: "Let's work together not just for a project, but for a continuous journey towards your business growth.",
+      title: "Collaborative Approach",
+      description: "I treat every project as a partnership. Your vision and feedback shape the entire process, ensuring the result perfectly represents your brand.",
       icon: faHandshake
+    },
+    {
+      title: "Timely Support",
+      description: "I’m here for the long run. Whether it's troubleshooting or updates, you can count on me for ongoing, personalized support after your website goes live.",
+      icon: faClock
+    },
+    {
+      title: "Local Expertise",
+      description: "I understand the Central Florida market and know what local businesses need to succeed online. My insights help you connect with your community.",
+      icon: faMapMarkerAlt
     }
   ];
 
   return (
-    <section className="benefits-section py-16 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 animate-gradient text-white relative overflow-hidden">
+    <section className="benefits-section py-16 bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 text-white">
       <div className="container mx-auto px-6 lg:px-12">
         {/* Section Heading */}
         <motion.h2
-          className="text-5xl font-bold text-blue-400 text-center mb-16 neon-text"
-          variants={slideInLeft}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+          className="text-5xl font-bold text-blue-400 text-center mb-16"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0, transition: { duration: 0.7, ease: 'easeOut' } }}
         >
-          Benefits of Working with Me
+          Why Choose Me as Your Web Developer?
         </motion.h2>
 
         {/* Benefits Cards */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"
-          variants={container}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {benefits.map((benefit, index) => (
             <motion.div
-              className="benefit-card bg-[#112240] rounded-lg p-8 shadow-lg cursor-pointer"
-              whileHover={{ scale: 1.05 }}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              className="benefit-card bg-[#112240] rounded-lg p-8 shadow-lg"
               key={index}
-              variants={slideInLeft}
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0, transition: { duration: 0.7, ease: 'easeOut' } }}
             >
               <FontAwesomeIcon icon={benefit.icon} className="text-blue-400 text-5xl mb-4" />
-              <motion.h3 className="text-3xl font-semibold text-white mb-4">
-                {benefit.title}
-              </motion.h3>
-              <motion.div className="relative h-20 overflow-hidden">
-                {hoveredIndex === index ? (
-                  <motion.p
-                    key="expanded"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    animate={{ opacity: 1, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } }}
-                    exit={{ opacity: 0, filter: 'blur(10px)', transition: { duration: 0.8 } }}
-                    className="text-lg text-blue-200"
-                  >
-                    {benefit.expandedDescription}
-                  </motion.p>
-                ) : (
-                  <motion.p
-                    key="default"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    animate={{ opacity: 1, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } }}
-                    exit={{ opacity: 0, filter: 'blur(10px)', transition: { duration: 0.8 } }}
-                    className="text-lg text-blue-200"
-                  >
-                    {benefit.description}
-                  </motion.p>
-                )}
-              </motion.div>
+              <h3 className="text-3xl font-semibold text-white mb-4">{benefit.title}</h3>
+              <p className="text-lg text-blue-200">{benefit.description}</p>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
+
+        
       </div>
     </section>
   );

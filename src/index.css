@@ -101,3 +101,12 @@ body, html {
   padding-top: 100px; /* Ensure adequate padding */
 }
 
+/* In your CSS file or style tag */
+.hero-section {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), #2563eb, #7c3aed, #9333ea);
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: background 0.1s ease-out;
+}
