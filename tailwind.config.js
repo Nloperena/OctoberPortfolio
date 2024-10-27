@@ -37,5 +37,13 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.transform-style-preserve': {
+          'transform-style': 'preserve-3d',
+        },
+      });
+    },
+  ],
 };

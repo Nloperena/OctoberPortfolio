@@ -1,173 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faHtml5, faCss3Alt, faJsSquare, faReact, faNodeJs, faPython, faFigma, faWordpress, faShopify, faWix, 
-  faWebflow
-} from '@fortawesome/free-brands-svg-icons'; // Import faWix as a placeholder for Webflow
-import { 
-  faCode, faServer, faNetworkWired, faLock, faPencilRuler, faDatabase, faPalette, faLaptopCode, faShieldAlt, faCloud 
-} from '@fortawesome/free-solid-svg-icons';
+import { skillCategories } from '../data/skillCategories'; // Adjust the path as needed
 
-const skillCategories = [
-  {
-    category: 'Design',
-    icon: faPalette,
-    skills: [
-      {
-        name: 'Figma',
-        icon: faFigma,
-        description: 'A collaborative interface design tool used for UI/UX design and prototyping.',
-      },
-      {
-        name: 'Adobe Photoshop',
-        icon: faPencilRuler,
-        description: 'A software for image editing and photo retouching for various image formats.',
-      },
-      {
-        name: 'Adobe Illustrator',
-        icon: faPencilRuler,
-        description: 'A vector graphics editor used for creating logos, icons, and illustrations.',
-      },
-      {
-        name: 'Blender',
-        icon: faPencilRuler,
-        description: 'An open-source 3D creation suite supporting modeling, animation, and rendering.',
-      },
-      {
-        name: 'Adobe Premiere Pro',
-        icon: faPencilRuler,
-        description: 'A timeline-based video editing software application developed by Adobe.',
-      },
-      {
-        name: 'Adobe After Effects',
-        icon: faPencilRuler,
-        description: 'A digital visual effects and motion graphics application for compositing and animation.',
-      },
-      {
-        name: 'UI/UX Design',
-        icon: faFigma,
-        description: 'The process of designing user interfaces and experiences for software and applications.',
-      },
-    ],
+// Floating circle animation with varied speed and offsets
+const circleAnimation = (duration, delay, distance) => ({
+  hidden: { y: 0 },
+  visible: {
+    y: [0, distance, 0],
+    transition: {
+      repeat: Infinity,
+      repeatType: 'mirror',
+      duration: duration,
+      ease: 'easeInOut',
+      delay: delay,
+    },
   },
-  {
-    category: 'Development',
-    icon: faLaptopCode,
-    skills: [
-      {
-        name: 'HTML5',
-        icon: faHtml5,
-        description: 'The standard markup language for creating web pages and web applications.',
-      },
-      {
-        name: 'CSS3',
-        icon: faCss3Alt,
-        description: 'A style sheet language used for describing the look and formatting of a document written in HTML.',
-      },
-      {
-        name: 'JavaScript',
-        icon: faJsSquare,
-        description: 'A programming language that conforms to the ECMAScript specification, used for web development.',
-      },
-      {
-        name: 'React',
-        icon: faReact,
-        description: 'A JavaScript library for building user interfaces, maintained by Facebook.',
-      },
-      {
-        name: 'Node.js',
-        icon: faNodeJs,
-        description: 'A JavaScript runtime built on Chrome\'s V8 JavaScript engine, used for server-side scripting.',
-      },
-      {
-        name: 'Python',
-        icon: faPython,
-        description: 'A high-level, interpreted programming language known for its readability and versatility.',
-      },
-      {
-        name: 'TailwindCSS',
-        icon: faCss3Alt,
-        description: 'A utility-first CSS framework for rapidly building custom user interfaces.',
-      },
-      {
-        name: 'Framer',
-        icon: faLaptopCode,
-        description: 'A prototyping tool that allows designers to create responsive layouts and interactive components.',
-      },
-      {
-        name: 'WordPress',
-        icon: faWordpress,
-        description: 'An open-source content management system used to build and maintain websites.',
-      },
-      {
-        name: 'Shopify',
-        icon: faShopify,
-        description: 'A commerce platform that allows anyone to set up an online store and sell their products.',
-      },
-      {
-        name: 'Webflow',
-        icon: faWebflow,
-        description: 'A web design tool, CMS, and hosting platform in one, allowing for responsive web design.',
-      },
-      {
-        name: 'Wix',
-        icon: faWix,
-        description: 'A cloud-based web development platform that allows users to create HTML5 websites through drag and drop tools.',
-      },
-    ],
-  },
-  {
-    category: 'IT',
-    icon: faShieldAlt,
-    skills: [
-      {
-        name: 'Networking',
-        icon: faNetworkWired,
-        description: 'The practice of interfacing two or more computing devices for the purpose of sharing data.',
-      },
-      {
-        name: 'Cybersecurity',
-        icon: faLock,
-        description: 'The practice of protecting systems, networks, and programs from digital attacks.',
-      },
-      {
-        name: 'Server Management',
-        icon: faServer,
-        description: 'The process of monitoring and maintaining servers to operate at peak performance.',
-      },
-      {
-        name: 'Cloud Computing',
-        icon: faCode,
-        description: 'Delivery of computing services over the internet to offer faster innovation and flexible resources.',
-      },
-      {
-        name: 'Database Management',
-        icon: faDatabase,
-        description: 'The use of software to store and organize data in a structured way for easy access and management.',
-      },
-      {
-        name: 'IT Support',
-        icon: faShieldAlt,
-        description: 'Assistance with technology-related issues including hardware, software, and network problems.',
-      },
-      {
-        name: 'Virtualization',
-        icon: faCode,
-        description: 'The creation of a virtual version of something, such as operating systems or network resources.',
-      },
-      {
-        name: 'Cloud Platforms (AWS, Azure)',
-        icon: faCloud,
-        description: 'Services offered by Amazon and Microsoft for cloud computing, storage, and networking.',
-      },
-    ],
-  },
-];
+});
 
 const SkillsTechnologies = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [hoveredSkill, setHoveredSkill] = useState(null);
+  const [wikiPreview, setWikiPreview] = useState('');
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const isTooltipVisible = useRef(false);
+  const summaryCache = useRef({});
+
+  // Fetch Wikipedia summary when hoveredSkill changes
+  useEffect(() => {
+    if (hoveredSkill) {
+      const fetchWikiPreview = async () => {
+        if (summaryCache.current[hoveredSkill.name]) {
+          setWikiPreview(summaryCache.current[hoveredSkill.name]);
+        } else {
+          try {
+            const title = hoveredSkill.wikiTitle || hoveredSkill.name;
+            const response = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+                title
+              )}`
+            );
+            const data = await response.json();
+            if (data.extract) {
+              setWikiPreview(data.extract);
+              summaryCache.current[hoveredSkill.name] = data.extract;
+            } else {
+              setWikiPreview('No summary available.');
+            }
+          } catch (error) {
+            console.error('Error fetching Wikipedia summary:', error);
+            setWikiPreview('Error loading summary.');
+          }
+        }
+      };
+
+      fetchWikiPreview();
+    } else {
+      setWikiPreview('');
+    }
+  }, [hoveredSkill]);
+
+  // Calculate tooltip position
+  const calculateTooltipPosition = (e) => {
+    const tooltipWidth = 250; // Adjust based on tooltip width
+    const tooltipHeight = 200; // Adjust based on tooltip height
+    const xOffset = 15;
+    const yOffset = 15;
+    let x = e.clientX + xOffset;
+    let y = e.clientY + yOffset;
+
+    // Get the viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Adjust x and y if tooltip goes beyond the right edge
+    if (x + tooltipWidth > viewportWidth) {
+      x = e.clientX - tooltipWidth - xOffset;
+    }
+
+    // Adjust y if tooltip goes beyond the bottom edge
+    if (y + tooltipHeight > viewportHeight) {
+      y = e.clientY - tooltipHeight - yOffset;
+    }
+
+    return { x, y };
+  };
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category === selectedCategory ? null : category);
@@ -175,9 +92,62 @@ const SkillsTechnologies = () => {
   };
 
   return (
-    <section className="skills-section py-16 lg:py-32 relative overflow-hidden bg-gray-900">
-      <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
+    <section
+      className="skills-section py-16 lg:py-32 relative overflow-hidden bg-gray-900"
+      id="skills"
+    >
+      {/* Floating Background Elements Container */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden"
+        layout
+        transition={{ duration: 0.5 }}
+      >
+        {/* Floating Parallax Circles with opacity */}
+        <motion.div
+          className="absolute top-1/4 left-0 w-32 h-32 bg-purple-400 rounded-full opacity-50"
+          variants={circleAnimation(6, 0, 30)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+        <motion.div
+          className="absolute top-1/3 right-0 w-24 h-24 bg-blue-400 rounded-full opacity-50"
+          variants={circleAnimation(4, 0.5, 20)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+        <motion.div
+          className="absolute bottom-1/4 left-0 w-16 h-16 bg-pink-400 rounded-full opacity-50"
+          variants={circleAnimation(5, 1, 25)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+        <motion.div
+          className="absolute top-1/2 left-10 w-40 h-40 bg-yellow-400 rounded-full opacity-50"
+          variants={circleAnimation(7, 1.2, 40)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+        <motion.div
+          className="absolute bottom-1/3 right-0 w-28 h-28 bg-green-400 rounded-full opacity-50"
+          variants={circleAnimation(5.5, 0.8, 35)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+        <motion.div
+          className="absolute bottom-1/4 right-10 w-20 h-20 bg-red-400 rounded-full opacity-50"
+          variants={circleAnimation(6.2, 1.5, 28)}
+          initial="hidden"
+          animate="visible"
+          layout
+        ></motion.div>
+      </motion.div>
 
+      <div className="container mx-auto px-4 lg:px-16 max-w-7xl relative">
         {/* Skills Heading */}
         <motion.h2
           className="text-4xl lg:text-5xl font-extrabold text-white mb-4 text-center"
@@ -197,23 +167,30 @@ const SkillsTechnologies = () => {
         </motion.p>
 
         {/* Main Category Buttons */}
-        <div className="category-buttons grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 justify-center items-center relative">
-          {skillCategories.map((category, index) => (
-            <motion.div
+        <div className="category-buttons grid grid-cols-1 md:grid-cols-3 gap-8 justify-center items-center relative">
+          {skillCategories.map((category) => (
+            <motion.button
               key={category.category}
-              className={`category-button w-full h-36 flex flex-col items-center justify-center rounded-lg cursor-pointer transform transition-transform duration-300 ${
+              className={`category-button w-full h-36 flex flex-col items-center justify-center rounded-lg cursor-pointer transform transition-transform duration-300 focus:outline-none ${
                 selectedCategory === category.category
                   ? 'scale-110 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50 border-4 border-white'
                   : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:scale-105'
               }`}
               onClick={() => handleCategoryClick(category.category)}
               whileTap={{ scale: 0.95 }}
+              aria-expanded={selectedCategory === category.category}
+              aria-label={`View skills in ${category.category}`}
             >
               {/* Icon */}
-              <FontAwesomeIcon icon={category.icon} className="text-white w-10 h-10 mb-2" />
+              <FontAwesomeIcon
+                icon={category.icon}
+                className="text-white w-10 h-10 mb-2"
+              />
               {/* Category Name */}
-              <span className="text-white text-lg font-bold">{category.category}</span>
-            </motion.div>
+              <span className="text-white text-lg font-bold">
+                {category.category}
+              </span>
+            </motion.button>
           ))}
         </div>
 
@@ -222,12 +199,32 @@ const SkillsTechnologies = () => {
           {selectedCategory && (
             <motion.div
               key="skills-container"
-              className="skills-container mt-12 lg:mt-16"
+              className="skills-container mt-12 lg:mt-16 relative"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
               transition={{ duration: 0.5 }}
+              layout
+              onMouseLeave={() => {
+                // Hide tooltip if not over it
+                setTimeout(() => {
+                  if (!isTooltipVisible.current) {
+                    setHoveredSkill(null);
+                  }
+                }, 100);
+              }}
             >
+              {/* Category Description */}
+              <div className="category-description mb-6 text-center">
+                <p className="text-gray-300 text-lg">
+                  {
+                    skillCategories.find(
+                      (cat) => cat.category === selectedCategory
+                    ).description
+                  }
+                </p>
+              </div>
+
               <motion.div
                 className="skills-list bg-gray-800 p-8 rounded-lg shadow-lg grid grid-cols-2 md:grid-cols-4 gap-6"
                 layout
@@ -241,46 +238,132 @@ const SkillsTechnologies = () => {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      onMouseEnter={() => setHoveredSkill(skill)}
-                      onMouseLeave={() => setHoveredSkill(null)}
+                      onMouseEnter={(e) => {
+                        setHoveredSkill(skill);
+                        isTooltipVisible.current = true;
+                        setTooltipPosition(calculateTooltipPosition(e));
+                      }}
+                      onMouseLeave={() => {
+                        isTooltipVisible.current = false;
+                        // Hide tooltip if not over it
+                        setTimeout(() => {
+                          if (!isTooltipVisible.current) {
+                            setHoveredSkill(null);
+                          }
+                        }, 100);
+                      }}
+                      onFocus={(e) => {
+                        setHoveredSkill(skill);
+                        isTooltipVisible.current = true;
+                        setTooltipPosition(calculateTooltipPosition(e));
+                      }}
+                      onBlur={() => {
+                        isTooltipVisible.current = false;
+                        setHoveredSkill(null);
+                      }}
+                      tabIndex="0"
+                      role="button"
+                      aria-label={`Learn more about ${skill.name}`}
                     >
                       {/* Icon with Enhanced Hover Effect */}
                       <motion.div
                         whileHover={{
                           scale: 1.2,
                           rotate: 10,
-                          color: '#38bdf8', // Tailwind CSS color cyan-400
-                          textShadow: '0px 0px 8px rgba(56, 189, 248, 0.8)',
+                          color: '#38bdf8',
+                          textShadow:
+                            '0px 0px 8px rgba(56, 189, 248, 0.8)',
                         }}
                         transition={{ type: 'spring', stiffness: 300 }}
                       >
-                        <FontAwesomeIcon icon={skill.icon} className="text-teal-400 w-10 h-10 mb-2" />
+                        <FontAwesomeIcon
+                          icon={skill.icon}
+                          className="text-teal-400 w-10 h-10 mb-2"
+                        />
                       </motion.div>
+                      {/* Skill Name */}
                       <span className="text-white text-md">{skill.name}</span>
                     </motion.div>
                   ))}
               </motion.div>
-
-              {/* Description for Hovered Skill */}
-              <AnimatePresence>
-                {hoveredSkill && (
-                  <motion.div
-                    key="skill-description"
-                    className="skill-description mt-8 p-6 bg-gray-700 rounded-lg text-white"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <h3 className="text-2xl font-bold mb-2">{hoveredSkill.name}</h3>
-                    <p className="text-lg">{hoveredSkill.description}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Wikipedia Preview */}
+      {hoveredSkill && wikiPreview && (
+        <div
+          className="fixed glassmorphic-tooltip text-white p-4 rounded-lg shadow-lg max-w-xs z-50"
+          style={{
+            top: tooltipPosition.y,
+            left: tooltipPosition.x,
+            maxHeight: '200px',
+            overflowY: 'auto',
+          }}
+          onMouseEnter={() => {
+            isTooltipVisible.current = true;
+          }}
+          onMouseLeave={() => {
+            isTooltipVisible.current = false;
+            setHoveredSkill(null);
+          }}
+        >
+          <h3 className="text-xl font-bold mb-2">{hoveredSkill.name}</h3>
+          <p className="text-sm mb-4">{wikiPreview}</p>
+          <a
+            href={hoveredSkill.wikiPage}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button
+              className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-200"
+              style={{ width: '100%' }}
+            >
+              Read More
+            </button>
+          </a>
+        </div>
+      )}
+
+      {/* Add wavy gradient animation and glassmorphic effect */}
+      <style jsx>{`
+        .glassmorphic-tooltip {
+          background: linear-gradient(
+            270deg,
+            rgba(255, 0, 117, 0.4),
+            rgba(255, 119, 205, 0.4),
+            rgba(119, 170, 255, 0.4),
+            rgba(0, 117, 255, 0.4)
+          );
+          background-size: 800% 800%;
+          animation: gradient-flow 15s ease infinite;
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: 15px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes gradient-flow {
+          0% {
+            background-position: 0% 50%;
+          }
+          25% {
+            background-position: 50% 100%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          75% {
+            background-position: 50% 0%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
     </section>
   );
 };
