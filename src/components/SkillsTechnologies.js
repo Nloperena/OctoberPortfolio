@@ -1,8 +1,99 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { skillCategories } from '../data/skillCategories'; // Adjust the path as needed
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+// Animation variants for the tooltip/modal container
+const containerVariants = {
+  hidden: { opacity: 0, y: 50 }, // Start with opacity 0 and y offset
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }, // Fade in and move up
+};
+
+// Floating Bubbles Component
+const FloatingBubbles = memo(() => (
+  <div className="absolute inset-0 overflow-hidden">
+    {/* Floating Bubbles */}
+    <div className="relative w-full h-full">
+      {/* Bubble 1 */}
+      <motion.div
+        className="absolute w-48 h-48 bg-teal-500 rounded-full opacity-20"
+        style={{ top: '10%', left: '5%' }}
+        animate={{
+          y: [0, -20, 0],
+          x: [0, 20, 0],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 2 */}
+      <motion.div
+        className="absolute w-72 h-72 bg-blue-500 rounded-full opacity-20"
+        style={{ bottom: '20%', right: '10%' }}
+        animate={{
+          y: [0, 30, 0],
+          x: [0, -30, 0],
+          scale: [1, 0.8, 1],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 3 */}
+      <motion.div
+        className="absolute w-56 h-56 bg-purple-500 rounded-full opacity-20"
+        style={{ top: '50%', left: '60%' }}
+        animate={{
+          y: [0, -25, 0],
+          x: [0, 25, 0],
+          scale: [1, 1.3, 1],
+        }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 4 */}
+      <motion.div
+        className="absolute w-40 h-40 bg-pink-500 rounded-full opacity-20"
+        style={{ bottom: '30%', left: '15%' }}
+        animate={{
+          y: [0, 15, 0],
+          x: [0, -15, 0],
+          scale: [1, 0.9, 1],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 5 */}
+      <motion.div
+        className="absolute w-64 h-64 bg-yellow-500 rounded-full opacity-20"
+        style={{ top: '25%', right: '20%' }}
+        animate={{
+          y: [0, -35, 0],
+          x: [0, 35, 0],
+          scale: [1, 1.4, 1],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 6 */}
+      <motion.div
+        className="absolute w-52 h-52 bg-green-500 rounded-full opacity-20"
+        style={{ bottom: '10%', right: '40%' }}
+        animate={{
+          y: [0, 25, 0],
+          x: [0, -25, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Bubble 7 */}
+      <motion.div
+        className="absolute w-36 h-36 bg-indigo-500 rounded-full opacity-20"
+        style={{ top: '70%', left: '80%' }}
+        animate={{
+          y: [0, -10, 0],
+          x: [0, 10, 0],
+          scale: [1, 0.95, 1],
+        }}
+        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </div>
+  </div>
+));
 
 const SkillsTechnologies = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -12,17 +103,50 @@ const SkillsTechnologies = () => {
   const isTooltipVisible = useRef(false);
   const summaryCache = useRef({});
   const [isMobile, setIsMobile] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(true);
+  const skillsSectionRef = useRef(null);
+  const headlineRef = useRef(null);
 
-  // Detect if the device is mobile
+  // Detect if the device is mobile and if it's in landscape mode
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkDeviceOrientation = () => {
+      const isMobileDevice = window.innerWidth <= 768; // Adjust breakpoint as needed
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      setIsMobile(isMobileDevice);
+      setIsLandscape(isLandscapeMode);
     };
 
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
+    checkDeviceOrientation();
+    window.addEventListener('resize', checkDeviceOrientation);
     return () => {
-      window.removeEventListener('resize', checkIsMobile);
+      window.removeEventListener('resize', checkDeviceOrientation);
+    };
+  }, []);
+
+  // Handle scroll to show/hide sticky categories bar based on headline visibility
+  useEffect(() => {
+    const headline = headlineRef.current;
+    let observer;
+
+    if (headline) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          setShowStickyBar(entry.isIntersecting);
+        },
+        {
+          root: null,
+          threshold: 0,
+        }
+      );
+
+      observer.observe(headline);
+    }
+
+    return () => {
+      if (observer && headline) {
+        observer.unobserve(headline);
+      }
     };
   }, []);
 
@@ -87,8 +211,21 @@ const SkillsTechnologies = () => {
   };
 
   const handleCategoryClick = (category) => {
-    setSelectedCategory(category === selectedCategory ? null : category);
+    setSelectedCategory(category);
     setHoveredSkill(null); // Reset hovered skill when category changes
+  };
+
+  // Animation variants for skills container
+  const skillsContainerVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
+    enter: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.8, y: 50 },
+  };
+
+  // Animation variants for the sticky bar
+  const stickyBarVariants = {
+    hidden: { y: '100%', opacity: 0 },
+    visible: { y: 0, opacity: 1 },
   };
 
   // Handle click outside of modal on mobile
@@ -117,9 +254,10 @@ const SkillsTechnologies = () => {
     <section
       className="skills-section py-16 lg:py-32 relative overflow-hidden bg-gray-900"
       id="skills"
+      ref={skillsSectionRef}
     >
-      {/* Background elements remain the same */}
-      {/* ... (Background elements code) */}
+      {/* Background Floating Bubbles */}
+      <FloatingBubbles />
 
       <div className="container mx-auto px-4 lg:px-16 max-w-7xl relative">
         {/* Skills Heading */}
@@ -128,11 +266,12 @@ const SkillsTechnologies = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          ref={headlineRef}
         >
           Skills & Technologies
         </motion.h2>
         <motion.p
-          className="text-lg lg:text-xl text-gray-300 mb-12 text-center"
+          className="text-lg lg:text-xl text-gray-300 mb-6 text-center"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -140,44 +279,49 @@ const SkillsTechnologies = () => {
           Explore my expertise across different areas
         </motion.p>
 
-        {/* Main Category Buttons */}
-        <div className="category-buttons grid grid-cols-1 md:grid-cols-3 gap-8 justify-center items-center relative">
-          {skillCategories.map((category) => (
-            <motion.button
-              key={category.category}
-              className={`category-button w-full h-36 flex flex-col items-center justify-center rounded-lg cursor-pointer transform transition-transform duration-300 focus:outline-none ${
-                selectedCategory === category.category
-                  ? 'scale-110 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50 border-4 border-white'
-                  : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:scale-105'
-              }`}
-              onClick={() => handleCategoryClick(category.category)}
-              whileTap={{ scale: 0.95 }}
-              aria-expanded={selectedCategory === category.category}
-              aria-label={`View skills in ${category.category}`}
-            >
-              {/* Icon */}
-              <FontAwesomeIcon
-                icon={category.icon}
-                className="text-white w-10 h-10 mb-2"
-              />
-              {/* Category Name */}
-              <span className="text-white text-lg font-bold">
-                {category.category}
-              </span>
-            </motion.button>
-          ))}
-        </div>
+        {/* Category Buttons for Landscape Mode */}
+        {isLandscape && (
+          <div className="category-buttons grid grid-cols-1 md:grid-cols-3 gap-8 justify-center items-center relative">
+            {skillCategories.map((category) => (
+              <motion.button
+                key={category.category}
+                className={`category-button w-full h-36 flex flex-col items-center justify-center rounded-lg cursor-pointer transform transition-transform duration-300 focus:outline-none ${
+                  selectedCategory === category.category
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50 border-4 border-white text-white'
+                    : 'bg-gradient-to-r from-teal-500 to-blue-500 hover:scale-105 text-white'
+                }`}
+                onClick={() => handleCategoryClick(category.category)}
+                whileTap={{ scale: 0.95 }}
+                animate={
+                  selectedCategory === category.category ? { scale: 1.1 } : { scale: 1 }
+                }
+                transition={{ type: 'spring', stiffness: 300 }}
+                aria-expanded={selectedCategory === category.category}
+                aria-label={`View skills in ${category.category}`}
+              >
+                {/* Icon */}
+                <FontAwesomeIcon
+                  icon={category.icon}
+                  className="w-10 h-10 mb-2"
+                />
+                {/* Category Name */}
+                <span className="text-lg font-bold">{category.category}</span>
+              </motion.button>
+            ))}
+          </div>
+        )}
 
         {/* Skills for Selected Category */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {selectedCategory && (
             <motion.div
-              key="skills-container"
-              className="skills-container mt-12 lg:mt-16 relative"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.5 }}
+              key={selectedCategory}
+              className="skills-container mt-8 lg:mt-12 relative"
+              variants={skillsContainerVariants}
+              initial="hidden"
+              animate="enter"
+              exit="exit"
+              transition={{ duration: 0.7, ease: 'easeOut' }}
               layout
             >
               {/* Category Description */}
@@ -192,7 +336,7 @@ const SkillsTechnologies = () => {
               </div>
 
               <motion.div
-                className="skills-list bg-gray-800 p-8 rounded-lg shadow-lg grid grid-cols-2 md:grid-cols-4 gap-6"
+                className="skills-list bg-gray-800 p-6 rounded-lg shadow-lg grid grid-cols-2 md:grid-cols-4 gap-6"
                 layout
               >
                 {skillCategories
@@ -279,16 +423,64 @@ const SkillsTechnologies = () => {
         </AnimatePresence>
       </div>
 
+      {/* Sticky Categories Bar */}
+      {!isLandscape && (
+        <AnimatePresence>
+          {showStickyBar && (
+            <motion.div
+              className="fixed bottom-0 left-0 right-0 py-2 shadow-lg flex justify-around items-center z-50"
+              variants={stickyBarVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              style={{
+                backgroundColor: '#1f2937', // Dark gray background
+              }}
+            >
+              {skillCategories.map((category) => (
+                <motion.button
+                  key={category.category}
+                  className={`category-button flex-1 h-16 flex flex-col items-center justify-center rounded-lg cursor-pointer transform transition-transform duration-300 focus:outline-none mx-2 ${
+                    selectedCategory === category.category
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-500/50 border-4 border-white text-white'
+                      : 'bg-gradient-to-r from-teal-500 to-blue-500 text-white'
+                  }`}
+                  onClick={() => handleCategoryClick(category.category)}
+                  whileTap={{ scale: 0.95 }}
+                  animate={
+                    selectedCategory === category.category ? { scale: 1.1 } : { scale: 1 }
+                  }
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  aria-expanded={selectedCategory === category.category}
+                  aria-label={`View skills in ${category.category}`}
+                  style={{ minWidth: '30%' }} // Ensure buttons take up equal space
+                >
+                  {/* Icon */}
+                  <FontAwesomeIcon icon={category.icon} className="w-6 h-6 mb-1" />
+                  {/* Category Name */}
+                  <span className="text-sm font-bold">{category.category}</span>
+                </motion.button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+
       {/* Tooltip for Desktop */}
       {!isMobile && hoveredSkill && wikiPreview && (
-        <div
-          className="fixed glassmorphic-tooltip text-white p-4 rounded-lg shadow-lg max-w-xs z-50"
+        <motion.div
+          className="fixed text-white p-4 rounded-lg shadow-lg max-w-xs z-50 glass-container"
           style={{
             top: tooltipPosition.y,
             left: tooltipPosition.x,
             maxHeight: '200px',
             overflowY: 'auto',
           }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
           onMouseEnter={() => {
             isTooltipVisible.current = true;
           }}
@@ -305,13 +497,12 @@ const SkillsTechnologies = () => {
             rel="noopener noreferrer"
           >
             <button
-              className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-200"
-              style={{ width: '100%' }}
+              className="bg-cyan-500 text-white px-4 py-2 rounded-lg hover:bg-cyan-600 transition-colors duration-300 w-full"
             >
               Read More
             </button>
           </a>
-        </div>
+        </motion.div>
       )}
 
       {/* Modal for Mobile */}
@@ -324,26 +515,29 @@ const SkillsTechnologies = () => {
           ></div>
           {/* Modal Content */}
           <motion.div
-            className="relative bg-white text-black p-6 rounded-lg max-w-sm w-full skill-modal-content"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            className="relative p-6 rounded-lg max-w-sm w-full glass-container skill-modal-content"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
           >
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-white hover:text-gray-300"
               onClick={() => setHoveredSkill(null)}
             >
               &times;
             </button>
-            <h3 className="text-xl font-bold mb-2">{hoveredSkill.name}</h3>
-            <p className="text-sm mb-4">{wikiPreview}</p>
+            <h3 className="text-xl font-bold mb-2 text-white">
+              {hoveredSkill.name}
+            </h3>
+            <p className="text-sm mb-4 text-white">{wikiPreview}</p>
             <a
               href={hoveredSkill.wikiPage}
               target="_blank"
               rel="noopener noreferrer"
             >
               <button
-                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-200 w-full"
+                className="bg-cyan-500 text-white px-4 py-2 rounded-lg hover:bg-cyan-600 transition-colors duration-300 w-full"
               >
                 Read More
               </button>
@@ -352,8 +546,15 @@ const SkillsTechnologies = () => {
         </div>
       )}
 
-      {/* Add styles for glassmorphic effect if needed */}
-      {/* ... (Styles remain the same) */}
+      {/* Add styles for the glass container */}
+      <style jsx>{`
+        .glass-container {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px); /* For Safari support */
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
     </section>
   );
 };
