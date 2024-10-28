@@ -1,3 +1,7 @@
+// Import necessary icons from React Icons
+import { SiAdobephotoshop, SiAdobeillustrator, SiAdobepremierepro, SiAdobeaftereffects, SiBlender } from 'react-icons/si';
+
+
 // Import icons from FontAwesome
 import {
     faPalette,
@@ -13,7 +17,7 @@ import {
     faFilm,
     faWandMagicSparkles,
     faCircleNodes,
-    faCode,
+    faCode, // for development in general
     faBlender,
   } from '@fortawesome/free-solid-svg-icons';
   
@@ -28,6 +32,7 @@ import {
     faWordpress,
     faShopify,
     faWix,
+    faWebflow, // correct for Framer to Webflow
   } from '@fortawesome/free-brands-svg-icons';
   
   export const skillCategories = [
@@ -158,12 +163,12 @@ import {
           wikiTitle: 'Tailwind CSS',
         },
         {
-          name: 'Framer',
-          icon: faLaptopCode,
+          name: 'Webflow',
+          icon: faWebflow, // Correct icon for Webflow
           description:
-            'A prototyping tool that allows designers to create responsive layouts and interactive components.',
-          wikiPage: 'https://en.wikipedia.org/wiki/Framer',
-          wikiTitle: 'Framer',
+            'A web design tool, CMS, and hosting platform in one, allowing for responsive web design.',
+          wikiPage: 'https://en.wikipedia.org/wiki/Webflow',
+          wikiTitle: 'Webflow',
         },
         {
           name: 'WordPress',
@@ -180,14 +185,6 @@ import {
             'A commerce platform that allows anyone to set up an online store and sell their products.',
           wikiPage: 'https://en.wikipedia.org/wiki/Shopify',
           wikiTitle: 'Shopify',
-        },
-        {
-          name: 'Webflow',
-          icon: faLaptopCode,
-          description:
-            'A web design tool, CMS, and hosting platform in one, allowing for responsive web design.',
-          wikiPage: 'https://en.wikipedia.org/wiki/Webflow',
-          wikiTitle: 'Webflow',
         },
         {
           name: 'Wix',

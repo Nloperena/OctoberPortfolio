@@ -96,7 +96,7 @@ const FloatingBubbles = memo(() => (
 ));
 
 const SkillsTechnologies = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('Development'); // Default to 'Development'
   const [hoveredSkill, setHoveredSkill] = useState(null);
   const [wikiPreview, setWikiPreview] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
