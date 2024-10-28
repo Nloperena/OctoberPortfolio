@@ -12,20 +12,7 @@ import Benefits from './components/BenefitsSection';
 import SpecialOffer from './components/SpecialOffer';
 import BackgroundVideo from './components/BackgroundVideo'; // Import the background video component
 
-// Page transition animation
-const pageVariants = {
-  initial: { opacity: 0, x: "-100vw" },
-  in: { opacity: 1, x: 0 },
-  out: { opacity: 0, x: "100vw" }
-};
-
-const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
-  duration: 0.8 // Adjusted duration for smoother transition
-};
-
-function App() {
+const App = () => {
   const [showModal, setShowModal] = useState(false); // Modal state
   const location = useLocation(); // Get the current location
 
@@ -39,8 +26,7 @@ function App() {
 
       <Navbar onContactClick={openModal} /> {/* Pass down the modal trigger */}
 
-      {/* AnimatePresence for page transitions */}
-      <AnimatePresence mode="wait"> {/* Use mode="wait" to ensure exit finishes before enter */}
+      <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route
             path="/"
@@ -49,13 +35,11 @@ function App() {
                 initial="initial"
                 animate="in"
                 exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
               >
-                <HeroSection openModal={openModal} /> {/* Pass openModal prop */}
+                <HeroSection openModal={openModal} />
                 <WhoIam />
                 <Skills />
-                <SpecialOffer openModal={openModal} /> {/* Pass openModal prop */}
+                <SpecialOffer openModal={openModal} />
                 <Projects />
                 <Benefits />
               </motion.div>
@@ -68,10 +52,8 @@ function App() {
                 initial="initial"
                 animate="in"
                 exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
               >
-                <SpecialOffer openModal={openModal} /> {/* Pass openModal prop */}
+                <SpecialOffer openModal={openModal} />
                 <Projects />
               </motion.div>
             }
@@ -87,6 +69,6 @@ function App() {
       </AnimatePresence>
     </div>
   );
-}
+};
 
 export default App;

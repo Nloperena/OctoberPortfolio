@@ -91,3 +91,36 @@
   color: black;
 }
 
+.background-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Keeps video behind all content */
+  overflow: hidden;
+}
+
+.background-video-container iframe {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1; /* Keep the video behind all content */
+  pointer-events: none; /* Ensure the video does not interfere with clicks */
+}
+
+
+.transition-opacity {
+  transition: opacity 1s ease-in-out;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
