@@ -218,7 +218,7 @@ const Modal = ({ closeModal }) => {
                 {submitStatus === 'error' ? (
                   <span>
                     <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 mr-2" />
-                    Oops, something went wrong!
+                    Website is currently in maintenance mode. We're in the middle of an update so try these options below!
                   </span>
                 ) : (
                   'Contact Me'
