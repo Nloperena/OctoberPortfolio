@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import Skills from './components/SkillsTechnologies';
 import Benefits from './components/BenefitsSection';
 import SpecialOffer from './components/SpecialOffer';
+import Testimonials from './components/Testimonials';
 import BackgroundVideo from './components/BackgroundVideo'; // Import the background video component
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
                 <SpecialOffer openModal={openModal} />
                 <Projects />
                 <Benefits />
+                <Testimonials />
               </motion.div>
             }
           />
