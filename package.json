@@ -16,6 +16,7 @@
     "axios": "^1.7.7",
     "contentful": "^11.0.3",
     "emailjs-com": "^3.2.0",
+    "express": "^4.21.1",
     "framer-motion": "^11.9.0",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
@@ -36,7 +37,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "node server.js",
+    "build": "react-scripts build",
+    "postinstall": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -58,7 +62,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "file-loader": "^6.2.0",
+    "image-webpack-loader": "^8.1.0",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13"
+    "react-app-rewired": "^2.2.1",
+    "tailwindcss": "^3.4.13",
+    "url-loader": "^4.1.1"
   }
 }
