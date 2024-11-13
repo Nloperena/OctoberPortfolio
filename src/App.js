@@ -11,7 +11,6 @@ import Skills from './components/SkillsTechnologies';
 import Benefits from './components/BenefitsSection';
 import SpecialOffer from './components/SpecialOffer';
 import Testimonials from './components/Testimonials';
-import BackgroundVideo from './components/BackgroundVideo'; // Import the background video component
 
 const App = () => {
   const [showModal, setShowModal] = useState(false); // Modal state
@@ -22,9 +21,6 @@ const App = () => {
 
   return (
     <div className="App bg-gray-900 min-h-screen text-white overflow-hidden relative">
-      {/* Background video */}
-      <BackgroundVideo /> {/* Add the background video */}
-
       <Navbar onContactClick={openModal} /> {/* Pass down the modal trigger */}
 
       <AnimatePresence mode="wait">
