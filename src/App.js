@@ -56,6 +56,18 @@ const App = () => {
               </motion.div>
             }
           />
+          <Route
+            path="/testimonials"
+            element={
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+              >
+                <Testimonials />
+              </motion.div>
+            }
+          />
         </Routes>
       </AnimatePresence>
 
