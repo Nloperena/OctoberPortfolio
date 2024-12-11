@@ -1,120 +1,175 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faProjectDiagram, faEnvelope, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { useCart } from '../context/CartContext';
+import { FaShoppingCart, FaQuoteRight } from 'react-icons/fa'; // Import the icon
+import { motion } from 'framer-motion';
+import CartDrawer from './CartDrawer';
 
-const Navbar = ({ onContactClick }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isSticky, setIsSticky] = useState(false); // Add sticky state
-  const [navbarHeight, setNavbarHeight] = useState(0); // Store navbar height
+const Navbar = () => {
+  const { cart } = useCart();
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Toggle visibility for mobile menu
-  useEffect(() => {
-    if (isOpen) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  }, [isOpen]);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-  // Add scroll event listener to make navbar sticky
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Generate star data for the background
+  const generateStars = (count) =>
+    Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 3 + 2,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      opacity: Math.random() * 0.5 + 0.5,
+      delay: Math.random() * 2,
+    }));
 
-  // Get navbar height and set it to state
-  useEffect(() => {
-    const navbar = document.querySelector('nav');
-    if (navbar) {
-      setNavbarHeight(navbar.offsetHeight);
-    }
-  }, []);
+  const stars = generateStars(30);
 
   return (
     <>
-      {/* Placeholder div to prevent content jumping */}
-      <div style={{ height: isSticky ? `${navbarHeight}px` : '0px' }}></div>
-
-      <nav className={`p-5 w-full z-10 transition-all duration-500 ease-in-out ${isSticky ? 'fixed top-0 bg-black bg-opacity-80 shadow-lg' : 'relative bg-transparent'}`}>
-        <div className="container mx-auto flex justify-between items-center">
-          {/* Logo or Brand */}
-          <div className="text-white text-2xl font-bold">
-            <Link to="/" className="hover:text-blue-400">Nico's Portfolio</Link>
-          </div>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8 text-white text-lg">
-            <Link to="/" className="hover:text-blue-400">
-              <FontAwesomeIcon icon={faHome} /> Home
-            </Link>
-            <Link to="/projects" className="hover:text-blue-400">
-              <FontAwesomeIcon icon={faProjectDiagram} /> Projects
-            </Link>
-            <button
-              onClick={onContactClick}  // Use onContactClick to trigger modal
-              className="hover:text-blue-400 focus:outline-none"
-            >
-              <FontAwesomeIcon icon={faEnvelope} /> Contact
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-white text-2xl" 
-            onClick={() => setIsOpen(!isOpen)}
+      {/* Sticky Navbar */}
+      <nav
+        className="fixed top-0 left-0 w-full bg-[#2F2504] text-[#D0DDD7] p-4 flex justify-between items-center shadow-lg z-[2147483647] overflow-hidden"
+        style={{ background: 'radial-gradient(circle at top, #2F2504, #1a202c)' }}
+      >
+        {/* Twinkling Stars */}
+        {stars.map((star) => (
+          <motion.div
+            key={`star-${star.id}`}
+            className="absolute"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              opacity: star.opacity,
+            }}
+            animate={{
+              opacity: [0, star.opacity, 0],
+              scale: [0.7, 1.2, 0.7],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              delay: star.delay,
+            }}
           >
-            <FontAwesomeIcon icon={faBars} />
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="50" fill="#fff" />
+            </svg>
+          </motion.div>
+        ))}
+
+        <div className="font-bold text-xl md:text-2xl lg:text-3xl">
+          <Link
+            to="/"
+            className="hover:text-[#8EF9F3] transition-colors duration-300"
+          >
+            Dad Hat Hub
+          </Link>
+        </div>
+
+        {/* Desktop Links */}
+        <div className="hidden md:flex space-x-8 items-center">
+          <Link
+            to="/"
+            className="hover:text-[#8EF9F3] transition-colors duration-300"
+          >
+            Home
+          </Link>
+          <Link
+            to="/shop"
+            className="hover:text-[#8EF9F3] transition-colors duration-300"
+          >
+            Shop
+          </Link>
+          <Link
+            to="/testimonials"
+            className="hover:text-[#8EF9F3] transition-colors duration-300 flex items-center"
+          >
+            <FaQuoteRight className="mr-2" /> Testimonials
+          </Link>
+          <Link
+            to="/checkout"
+            className="hover:text-[#8EF9F3] transition-colors duration-300"
+          >
+            Checkout
+          </Link>
+          <button onClick={toggleCart} className="relative focus:outline-none">
+            <FaShoppingCart size={24} />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-4 bg-[#8EF9F3] text-[#2F2504] text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
           </button>
         </div>
 
-        {/* Mobile Dropdown Menu */}
-        <div className={`md:hidden fixed inset-0 bg-black bg-opacity-90 transform transition-transform duration-500 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          {/* Close Button */}
-          <button 
-            className="absolute top-5 right-5 text-white text-3xl"
-            onClick={() => setIsOpen(false)}
-          >
-            <FontAwesomeIcon icon={faTimes} />
+        {/* Mobile Cart Icon and Menu Icon */}
+        <div className="md:hidden flex items-center space-x-4">
+          <button onClick={toggleCart} className="relative focus:outline-none">
+            <FaShoppingCart size={24} />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#8EF9F3] text-[#2F2504] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
           </button>
-
-          {/* Centered Menu Links */}
-          <div className="flex flex-col justify-center items-center h-full space-y-5">
-            <Link 
-              to="/" 
-              className={`text-white text-2xl transition-opacity duration-500 ${isVisible ? 'opacity-100 delay-100' : 'opacity-0'}`}
-              onClick={() => setIsOpen(false)}
-            >
-              <FontAwesomeIcon icon={faHome} className="mr-2" /> Home
-            </Link>
-            <Link 
-              to="/projects" 
-              className={`text-white text-2xl transition-opacity duration-500 ${isVisible ? 'opacity-100 delay-200' : 'opacity-0'}`}
-              onClick={() => setIsOpen(false)}
-            >
-              <FontAwesomeIcon icon={faProjectDiagram} className="mr-2" /> Projects
-            </Link>
-            <button 
-              className={`text-white text-2xl transition-opacity duration-500 ${isVisible ? 'opacity-100 delay-300' : 'opacity-0'}`}
-              onClick={() => {
-                setIsOpen(false);  // Close the mobile menu
-                onContactClick();  // Trigger the modal
-              }}
-            >
-              <FontAwesomeIcon icon={faEnvelope} className="mr-2" /> Contact
-            </button>
-          </div>
+          <button
+            onClick={toggleMobileMenu}
+            className="text-2xl focus:outline-none hover:text-[#8EF9F3] transition-colors duration-300"
+          >
+            ☰
+          </button>
         </div>
+
+        {/* Mobile Menu Links */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-16 left-0 w-full bg-[#2F2504] text-[#D0DDD7] py-4 space-y-4 flex flex-col items-center md:hidden">
+            <Link
+              to="/"
+              onClick={toggleMobileMenu}
+              className="hover:text-[#8EF9F3] transition-colors duration-300"
+            >
+              Home
+            </Link>
+            <Link
+              to="/shop"
+              onClick={toggleMobileMenu}
+              className="hover:text-[#8EF9F3] transition-colors duration-300"
+            >
+              Shop
+            </Link>
+            <Link
+              to="/testimonials"
+              onClick={toggleMobileMenu}
+              className="hover:text-[#8EF9F3] transition-colors duration-300 flex items-center"
+            >
+              <FaQuoteRight className="mr-2" /> Testimonials
+            </Link>
+            <Link
+              to="/checkout"
+              onClick={toggleMobileMenu}
+              className="hover:text-[#8EF9F3] transition-colors duration-300"
+            >
+              Checkout
+            </Link>
+          </div>
+        )}
       </nav>
+
+      {/* Cart Drawer */}
+      <CartDrawer isOpen={isCartOpen} toggleCart={toggleCart} />
+
+      {/* Adding padding to the top of the content so it doesn't get hidden behind the sticky navbar */}
+      <div className="pt-16"></div>
     </>
   );
 };
